@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.params=x\ y\ c\ n
+comment0.target=Train(int,\ int,\ java.awt.Color,\ int)
+comment1.params=g
+comment1.target=void\ draw(java.awt.Graphics)
+comment2.params=
+comment2.target=int\ getx()
+comment3.params=
+comment3.target=int\ gety()
+numComments=4

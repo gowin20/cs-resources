@@ -1,0 +1,416 @@
+/* 
+Applicable to every page 
+
+  $linen: #f7ece1ff;
+*/
+
+
+
+* {
+    box-sizing: border-box;
+  }
+
+
+body {
+    font-family: "Hoefler Text", Helvetica, sans-serif;
+    margin: 0;
+}
+
+h1 {
+    font-family: Georgia, serif;
+}
+
+h2 {
+  font-family: Georgia, serif;
+}
+h3 {
+  font-family: Georgia, serif;
+}
+h4 {
+  font-family: Georgia, serif;
+}
+h5 {
+  font-family: Georgia, serif;
+}
+
+
+
+
+
+
+.bgimg {
+    z-index: 0;
+    overflow: hidden;
+    width:100%;
+    height:100%;
+    position: relative;
+    display: block;
+}
+
+
+.lgimg {
+  width:100%;
+  height:100%;
+  padding: 20px 20px;
+  background-color: #BA999D;
+  text-align: center;
+}
+
+.smimgbox {
+  width:100%;
+  height:auto;
+  padding: 20px;
+  background-color: #BA999D;
+  text-align: center;
+}
+
+.smimg {
+  width:50%;
+  display:block;
+  margin:auto;
+}
+
+
+.header {
+    z-index:-1;
+    padding: 1px;
+    width:100%;
+    height:230px;
+    text-align: center;
+    color: #f7ece1ff;
+}
+
+  /* Increase the font size of the heading */
+.header-text {
+    position: relative;
+    z-index:0;
+    top:-220px;
+    font-size: 30px;
+    color:#f7ece1ff;
+}
+
+.content-box {
+    background-color: #aaa;
+    width: 100%;
+    padding: 20px;
+}
+
+
+/* gallery pages */
+.gallery-bg {
+  display: block;
+  padding: 0px 100px;
+  width:100%;
+}
+
+.gallery {
+  background-color: #f7ece1ff;
+  display: block;
+  padding: 100px;
+}
+
+
+/* Column container */
+/* Create two unequal columns that sits next to each other */
+
+.row {  
+    display: -ms-flexbox; /* IE10 */
+    display: flex;
+    -ms-flex-wrap: wrap; /* IE10 */
+    flex-wrap: wrap;
+}
+
+
+.half {
+  -ms-flex: 50%; /* IE10 */
+  flex: 50%;
+  padding: 20px;
+}
+
+.whole {
+  -ms-flex: 100%; /* IE10 */
+  flex: 100%;
+  padding: 10px;
+}
+
+
+/* Main column - side columns are listed in specific page colors */
+.main {   
+    -ms-flex: 70%; /* IE10 */
+    flex: 70%;
+    background-color: #F7ECE1;
+    padding: 20px;
+}
+
+/* Sidebar/left column */
+.side {
+    -ms-flex: 30%; /* IE10 */
+    flex: 30%;
+    padding: 20px;
+}
+
+/* Footer Stuff */
+.footer-content {
+    width: 100%;
+    padding: 1px;
+}
+    
+   
+.footer {
+    padding-top: 30px;
+    text-align: center;
+}
+    
+
+/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 700px) {
+    .row {   
+        flex-direction: column;
+    }
+}
+
+/* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
+@media screen and (max-width: 400px) {
+    .navbar-index a {
+        float: none;
+        width: 100%;
+    }
+}
+
+/* 
+INDIVIDUAL PAGE STYLING
+different navbar class for each page, to get the hover properties properly configured
+
+index: purple
+writing: orange
+programming: blue
+adventures: green
+art: pink
+*/
+
+/* 
+INDEX NAVBAR
+
+page colors:
+  $cyber-grape: #594077ff;
+  dark purple: #1D1528;
+  $lavender-gray: #cac4ceff;
+*/
+
+/* Sticky navbar - toggles between relative and fixed, depending on the scroll position. It is positioned relative until a given offset position is met in the viewport - then it "sticks" in place (like position:fixed). The sticky value is not supported in IE or Edge 15 and earlier versions. However, for these versions the navbar-index.navbar-index will inherit default position */
+.navbar-index {
+    overflow: hidden;
+    background-color: #1D1528;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+}
+
+/* Right-aligned link */
+.navbar-index a.right {
+    float: right;
+    }
+    
+/* Style the navigation bar links */
+.navbar-index a {
+    float: left;
+    display: block;
+    color: #f7ece1ff;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+/* Change color on hover */
+.navbar-index a:hover {
+    background-color: #CAC4CE;
+    color: #251605ff;
+}
+
+/* Active/current link */
+.navbar-index a.active {
+    background-color: #CAC4CE;
+    color: #251605ff;
+}
+
+.footer-content-index {
+    background-color: #594077;
+    width: 100%;
+    padding: 1px;
+}
+
+/* 
+WRITING PAGE NAVBAR
+
+Page Colors:  
+    golden brown: #A26115;
+    $bistre: #251605ff;
+*/
+
+/* Increase the font size of the heading */
+.navbar-writing {
+    overflow: hidden;
+    background-color: #251605ff;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+}
+
+/* Style the navigation bar links */
+.navbar-writing a {
+    float: left;
+    display: block;
+    color: #f7ece1ff;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+/* Right-aligned link */
+.navbar-writing a.right {
+    float: right;   
+}
+
+/* Change color on hover */
+.navbar-writing a:hover {
+    background-color: #D1CDC9;
+    color: #251605ff;
+}
+
+/* Active/current link */
+.navbar-writing a.active {
+    background-color: #D1CDC9;
+    color: #251605ff;
+}
+
+/* 
+PROGRAMMING NAVBAR 
+
+  prussian blue: #0D2031;
+  lapis lazuli: #275F91;
+*/
+
+.navbar-cs {
+    overflow: hidden;
+    background-color: #0D2031;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+  }
+  
+  /* Style the navigation bar links */
+.navbar-cs a {
+    float: left;
+    display: block;
+    color: #f7ece1ff;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+  }
+  
+  /* Right-aligned link */
+.navbar-cs a.right {
+    float: right;
+  }
+  
+  /* Change color on hover */
+.navbar-cs a:hover {
+    background-color: #C9CED1;
+    color: #251605ff;
+  }
+  
+  /* Active/current link */
+.navbar-cs a.active {
+    background-color: #C9CED1;
+    color: #251605ff;
+  }
+
+
+/*
+ADVENTURES NAVBAR
+
+  Color theme:
+
+  phthalo green: #0F2E25;
+  amazon: #4A7C59;
+*/
+
+.navbar-adventures {
+    overflow: hidden;
+    background-color: #0F2E25;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+  }
+  
+  /* Style the navigation bar links */
+  .navbar-adventures a {
+    float: left;
+    display: block;
+    color: #f7ece1ff;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+  }
+  
+  
+  /* Right-aligned link */
+  .navbar-adventures a.right {
+    float: right;
+  }
+  
+  /* Change color on hover */
+  .navbar-adventures a:hover {
+    background-color: #C9D1C9;
+    color: #251605ff;
+  }
+  
+  /* Active/current link */
+  .navbar-adventures a.active {
+    background-color: #C9D1C9;
+    color: #251605ff;
+  }
+
+  /* 
+ART PAGE CSS
+
+Pale Pink: #FCE1E4
+navbar red: 6F0B17
+pink pink: F17E8C
+  */
+
+  .navbar-art {
+    overflow: hidden;
+    background-color: #6F0B17;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+  }
+  
+  /* Style the navigation bar links */
+  .navbar-art a {
+    float: left;
+    display: block;
+    color: #f7ece1ff;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+  }
+  
+  
+  /* Right-aligned link */
+  .navbar-art a.right {
+    float: right;
+  }
+  
+  /* Change color on hover */
+  .navbar-art a:hover {
+    background-color: #FACCD1;
+    color: #251605ff;
+  }
+  
+  /* Active/current link */
+  .navbar-art a.active {
+    background-color: #FACCD1;
+    color: #251605ff;
+  }

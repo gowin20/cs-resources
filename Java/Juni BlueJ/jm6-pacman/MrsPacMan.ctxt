@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.params=x\ y\ s\ c\ bc
+comment0.target=MrsPacMan(int,\ int,\ int,\ java.awt.Color,\ java.awt.Color)
+comment1.params=g
+comment1.target=void\ draw(java.awt.Graphics)
+numComments=2
