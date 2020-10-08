@@ -1,0 +1,48 @@
+Haskell commands, conveniently compiled for your convenience
+
+
+stack is the keyword for everything
+
+
+creating a project:
+
+stack new <projectname> <projecttemplate>
+	this creates a folder in your current directory that contains the project. Most of the stack essentials are in ~/.stack, but you only ever work within a project. Stack is smart, it knows how to find its stuff
+
+once you "cd <projectname>", type:
+
+stack build : MOST IMPORTANT COMMAND
+	installs a GHC in order to build the project, then builds it for you
+
+now, if you want to execute your project, type:
+
+stack exec <projectname>-exe
+	<projectname>-exe is hidden in the ./.stack-work directory, but don't worry about that. It knows.
+
+
+Relevant Files within this folder:
+
+Setup.hs
+	- mostly boilerplate, component of the Cabal build system that stack uses
+stack.yaml
+	- determines project-level settings.
+	subfields:
+		flags
+		extra-deps
+		packages
+			tells stack which local packages to build. a single '.' is default, as new projects only have a single package in the same directory
+		resolver
+			tells stack how to build packages - which version of GHC, etc.
+
+package.yaml
+	- .cabal file is generated from this. DON'T modify cabal file
+
+
+
+
+stack path
+
+stack clean : cleans artifacts
+
+stack purge (== stack clean --full) reverts the project to a completely fresh state
+

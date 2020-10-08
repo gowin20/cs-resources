@@ -1,0 +1,17 @@
+George Owen - Ling 185A
+405-196-467
+Assignment 2 - Part 4
+-----------------------------
+
+L.
+	a. phi
+	b. F
+	c. Neither
+	d. T
+	e. F
+M.
+	a. r
+	b. 0
+	c. Neither
+	d. 1
+	e. 0
