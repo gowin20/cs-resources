@@ -1,0 +1,105 @@
+#!/bin/bash
+
+echo $(export LC_ALL='C')
+
+
+#first case statement makes sure you have the correct number of arguments
+case "$#" in
+    0)
+	dir="."
+	;;
+    1)
+	if [[ $1 == -r ]]; then
+	    dir="."
+	elif [[ $1 == -* ]]; then
+	    echo "Error: please specify a file" >&2
+	    exit $?
+	else
+    	    dir=$1
+	fi
+
+	;;    
+    2)
+	if [[ $1 != -r ]]; then
+	    echo "Error: First argument must be -r when passing two arguments" >&2
+	    exit $?
+	fi
+	dir=$2
+	;; 
+    *)
+	echo "Error: too many arguments" >&2
+	exit $?
+        ;;
+esac
+
+#this case statement processes the inputs, makes sure the directory exists
+echo "" > bad	
+
+case $1 in
+    -r)
+	#echo "recursive case"
+	shift 1
+
+	find $dir -type d -exec $0 {} \;
+
+	;;
+    *)
+	if [ -d $dir ]; then
+	    if [ ! -r $dir ]; then
+		echo "Error: directory $dir not readable" >&2
+		exit 1
+	    #else
+		#echo "this is a directory: $dir"
+	    fi
+	elif [ -L $dir ]; then
+	    echo "Error: Symbolic link found" >&2
+	else
+	    echo "That's not a directory" >&2
+	    exit 1
+	fi
+
+	#create variable containing the files in directory
+	contents=$(find $dir -maxdepth 1 -mindepth 1 -exec basename {} \;)
+
+	#lines that contain invalid characters
+	echo $(grep "[^\.\_a-zA-Z\-]" <<< "$contents") >> bad
+
+	#lines that begin with a hyphen
+	echo $(grep "^\-" <<< "$contents") >> bad
+
+	#lines that begin with a period
+	echo $(grep "^\." <<< "$contents") >> bad
+
+	#lines that contain 15 or more characters
+	echo $(grep -E "^.{15,}" <<< "$contents") >> bad
+
+
+
+	#find duplicate lines
+	dupe=$(grep -vFf bad <<< "$contents" | tr A-Z a-z | sort | uniq -d)
+	#append duplicate lines with proper syntax to our list
+	for line in $dupe
+	do
+	    ls -1N --show-control-chars | grep -iFx $line >> bad
+	done
+
+	#move each filename to a newline, and delete excess newlines - then sort
+	
+	sed -i 's/\ /\n/g' bad
+	sed -i '/^$/d' bad
+	sort -u -o bad bad
+
+#	sed -i "/\Z/d" bad
+#	truncate -s -1 bad
+  	#prepend the file path to every line of the file
+	sed -i "s|^|$dir\/|" bad
+
+	echo "$(<bad)" #>> notBad
+
+	rm bad
+
+        #sed -i '/^$/d' notBad
+	#sort -u -o notBad notBad
+	;;
+esac
+

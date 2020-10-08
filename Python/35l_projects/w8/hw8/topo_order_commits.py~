@@ -1,0 +1,112 @@
+import os, sys, zlib
+#import os.path
+#only libraries we need are os, sys, and zlib
+
+class CommitNode:
+    def __init__(self, commit_hash):
+        """
+        :type commit_hash: str
+        """
+        self.commit_hash = commit_hash
+        self.parents = set()
+        self.children = set()
+
+
+def find_git():
+    directory = os.getcwd() #start searching at the current working directory
+
+    while (directory != "/"):
+        for item in (os.listdir(directory)):
+            #target must be a folder which is named ".git"
+            itempath = directory + "/" + item
+            if os.path.isdir(itempath) and (item == ".git"): 
+                return directory #equivalent to os.path.dirname(itempath)
+        directory = os.path.dirname(directory)
+
+    sys.stderr.write("Not inside a git repository\n")
+    exit(1)
+
+
+def find_commits(repos):
+    obj_dir = repos + "/.git/objects"
+    commits = {}
+    for item in (os.listdir(obj_dir)):
+        #item is the subdirectories of objects. So like "73" or "1D"
+        if (item == "info" or item == "pack"):
+            continue
+        keys = (os.listdir(obj_dir + "/" + item))
+        #print(keys)
+        for obj_file in keys:
+            #obj_file is the contents of these subdirectories, which are also the following 38 chars of the commit
+            compressed_file = open((obj_dir + "/" + item + "/" + obj_file), 'rb').read()
+            #print(compressed_file)
+            decompressed_file = zlib.decompress(compressed_file).decode('utf-8','ignore')
+            if (decompressed_file[0] == 'c'):
+                commits[item + obj_file] = decompressed_file
+    return commits
+
+
+
+
+def main():
+    repository = find_git()
+    print("Found repository at " + repository)
+
+    refs_dir = repository + "/.git/refs/heads"
+    local_branches = [item for item in (os.listdir(refs_dir))]
+
+
+    #print(local_branches)   
+
+    commit_dict = find_commits(repository)
+
+    print("All commits:")
+    #print(commits)
+
+    for commit in commit_dict:
+
+        #where are your parents?
+        his_parents = []
+
+        lines = commit_dict[commit].split("\n")
+        
+        numParents = commit_dict[commit].count("parent")
+        print ("Commit: " + commit + " and his parents \/")
+
+        while(lines[1][0:6] == "parent"):
+            his_parents.append(lines[1][7:])
+            lines.pop(1)
+        print (his_parents)
+
+
+
+
+        #print (commit + " : " + commit_dict[commit])
+
+
+
+#for hash in (os.listdir(item))
+
+#734faba0f828817659cd9871ba96957c45758f07
+#734faba0f828817659cd9871ba96957c45758f07 parent
+
+main()
+
+
+"""
+TOPO DFS
+
+
+stack, visited = [(vertex, [vertex])], set()
+while stack:
+    v, path = stack.pop()
+    if v in visited:
+        continue
+    visited.add(v)
+    ...
+    for child in v.adjacent_vertices:
+        if child not in visited:
+            stack.append((child, path + [child])
+
+
+"""

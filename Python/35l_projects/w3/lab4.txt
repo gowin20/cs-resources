@@ -1,0 +1,49 @@
+lab4.txt
+
+send help
+
+
+
+	./configure --prefix=/u/eng/class/clasowe/35l/bCoreutils
+		using --prefix configures the coreutils package to install
+		 in the specified folder, instead of in /usr/bin
+	make
+		This command compiles and maintains all the 
+		code found within coreutils
+	make install
+		After running make, make install will actually install 
+		the package within the folder I specified
+
+
+Building this caused an error:
+	In file included from utimecmp.c:41:
+	utimens.h:2:5: error: conflicting types for 'futimens'
+	    2 | int futimens (int, char const *, struct timespec const [2]);
+	      |     ^~~~~~~~
+	In file included from utimecmp.h:25,
+	                 from utimecmp.c:25:
+	/usr/include/sys/stat.h:373:12: note: previous declaration of 'futimens' was here
+	  373 | extern int futimens (int __fd, const struct timespec __times[2]) __THROW;
+	      |            ^~~~~~~~
+
+I downloaded the patch using
+	wget http://web.cs.ucla.edu/classes/winter20/cs35L/assign/coreutils.diff
+then applied it with
+	patch -p0 < coreutils.diff
+
+after that, I was able to sucessfully build coreutils.
+
+
+Then I reproduced the problem by creating an "old" file
+
+	touch -d '1912-11-11 11:00 GMT' titanic-logs
+
+	touch now
+	sleep 1
+	touch now1
+
+	TZ=UTC0 ls -lt --full-time titanic-logs now now1
+	-rw-r--r-- 1 classowe class 0 2048-12-17 17:28:16.000000000 +0000 titanic-logs
+	-rw-r--r-- 1 classowe class 0 2020-02-03 07:48:46.442793000 +0000 now1
+	-rw-r--r-- 1 classowe class 0 2020-02-03 07:48:39.939753000 +0000 now
+

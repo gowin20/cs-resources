@@ -1,0 +1,183 @@
+python! (35l)
+
+scripting language, but also object oriented!
+
+
+
+Python code compiled to bytecode
+bytecode interpreted by python interpreter
+
+slower than C
+
+
+
+
+python: all variables are pointers to actual objects in memory - ((everything is an object))
+not typed - type assignments happen automatically pretty much
+
+Case sensitive
+start with _ or letters, followed by letters/_/digits -> no other special characters!
+Certain reserved words can't be used (turtle, for, etc.)
+
+#!/usr/bin/python
+
+
+Python lists are like C lists, but mutable (expands as new items are added) and heterogeneous (different types)
+
+string slicing: for a string s
+
+s[start:end] gives you everything from chr. number 'start' to chr. number 'end'
+
+s[:] gives the whole string - easily copy a sequence like this
+
+		 H  E  L  L  O
+		 0  1  2  3  4
+		-5 -4 -3 -2 -1
+
+classes - similar to classes in C++
+
+class MyClass:
+
+	age = 0
+
+	def create(self): #first argument HAS to be self - this means you're associating this function with the object it's attached to
+		return "I'm alive!"
+
+	def __init__(self, real, imag):
+		self.r = real
+		self.i = imag
+
+obj = MyClass()
+print (obj.create()) # notice there's no need to specify an input for the "self" parameter - this parameter is filled by the obj. part
+print(obj.age)
+
+
+Classes are assigned with input parameters ()
+
+
+
+def main(): 
+	#stuff
+main()
+
+
+try:
+	#stuff
+except:
+	#other stuff
+
+
+
+
+
+Python2 vs Python3
+
+2:
+	Older libraries
+	ASCII
+	5/2 = 2
+	print "hello"
+
+3:
+	Newer libraries, optimized
+	unicode
+	5/2 = 2.5
+	print ("hello")
+
+USE PYTHON3
+
+optparse library
+
+
+from optparse import OptionParser
+
+
+
+
+
+
+
+
+\/([^\/]{14,})\/
+
+basename command
+
+match many of them!
+
+([^\/]{14,})
+#match strings without a '/' that are 14 or more characters long
+
+
+
+\.\.?[^\.\/]+
+#match files that start with a dot, that aren't '.' or ".."
+
+
+grep with td gets rid of too many things
+
+
+
+Python: Pass by object reference
+
+variables - names attached to an object (the variable itself simply points to the object)
+
+
+
+Immutable: objects whose values cannot change
+	Tuples
+	Booleans
+	Strings
+	Numbers
+
+Mutable: able to change and modify this (dynamic)
+	Dictionaries
+	Lists
+	Sets
+	User-defined objects (can be defined as immutable, however)
+
+
+
+
+
+
+
+C builtins:
+
+Integers
+Floating Points
+Character Strings
+no bool (0 is false, true is nonzero)
+
+gcc -std=c99 binsortu.c
+
+
+
+structs, no classes
+
+
+
+
+FILE *fptr;
+
+FILE *fopen( filename, mode );
+
+int fclose(FILE *fp);
+
+
+
+printf("%s (#%d) has %f points. \n", player, player_number, score);
+// Mary (#26) has 42.5 points
+
+
+
+
+function pointer:
+
+double (*f_ptr) (double) (double)
+
+
+
+
+
+GDB
+	C, C++, Java, Objective-C

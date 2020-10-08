@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "line 1: $1"
+echo 'line 2: $2'
+echo "line 3: $@"
+echo "line 4: ca${4}ts"

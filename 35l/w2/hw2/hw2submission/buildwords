@@ -1,0 +1,23 @@
+#!/bin/bash
+
+
+sed -E "s/\?|<u>|<\/u>|<br>//g" $1 | #hawaiian.html |
+
+sed -E '/[^>]$/{N; s/\n//}' |
+sed -E '/[^>]$/{N; s/\n//}' |
+
+grep -E '<td.*>.+</td>' |
+
+sed '1,4d' |
+sed '2~2d' |
+sed -E 's/<td[a-zA-Z\ \=\" ]*>|<\/td>//g' |
+
+tr [\`] [\'] |
+tr [A-Z] [a-z] |
+tr -s ,\ \- '[\n*]' |
+
+sed -E "/./!d" |
+
+sed -E "s/[^pk\'mnwlhaeiou]//g" |
+
+sort -u #> hwords

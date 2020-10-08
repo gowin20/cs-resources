@@ -1,0 +1,100 @@
+George Owen
+405196467
+
+Lab 9 Homework
+--------------
+
+Question 1:
+
+    If another team tracked the bytes going across the network during the lab, the resulting network should still be secure. 
+
+    SSH sends exclusively encrypted data, in contrast to something like Telnet.
+    The only information sent over the network is encrypted, and the other team would need my private key in order to decrypt it.
+    Even if they get a decrypted version of my public key when I run "ssh-copy-id", that would not be sufficient to access the network
+
+    If the other team were to log my keystrokes after all the client-server setup, they would be able to obtain my private key password
+    when I execute "ssh-add". However, this is still not sufficient information to compromise the network, as they still would not have a copy of my private key.
+
+    If the other team obtained a USB which I was booting from, we may be in trouble. This means they would have access to all of my public and private keyfiles,
+    and since I have already used "ssh-add" to remember my password, they would be able to use them as they please. This might be a reason to not use "ssh-add"
+    on insecure machines.
+
+
+Question 2:
+
+    gpg --verify checks whether the target file matches the detached signature.
+    For example, the output from " gpg2 --verify hw.sig hw-pubkey.asc" was:
+        gpg: Signature made Wed 11 Mar 2020 10:51:28 PM PDT using RSA key ID E7228664
+        gpg: Good signature from "George Owen (Hi guys! I'm making a key pair) <gowin@g.ucla.edu>"
+
+    Since this command only verifies if the signatures match, someone could easily spoof this by getting a hold of my public key.
+
+    Someone else could then use my public key as their own, and the signatures would still match.
+
+    I'm not sure of the best way to fix this problem. We'd need a way to track that the public key actually comes from me,
+    in addition to using gpg --verify.
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------
+-- Writeup
+--------------------------------------------------------
+
+After connecting to lnxsrv09.seas.ucla.edu,
+
+I used "gpg --version" to verify that we're using gpg version 2:
+    gpg (GnuPG) 2.0.22
+    libgcrypt 1.5.3
+    Copyright (C) 2013 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+
+
+On the SEASnet GNU/Linux servers, use GNU Privacy Guard's shell commands to create a key pair. Use GPG version 2. 
+Export the public key, in ASCII format, into a file hw-pubkey.asc. 
+Use this key to create a detached signature for your submission so that the commands described below can successfully verify it.
+
+
+I used "gpg --gen-key" to create a key pair
+
+Type: RSA and RSA
+keysize: 2048
+Key is valid for: 0 (does not expire)
+
+USER-ID: "George Owen (Hi guys! I'm making a key pair) <gowin@g.ucla.edu>"
+
+
+After hitting "okay," I was prompted to input a password within a SUPER cool CLI popup.
+
+After entering my password, it told me that I was bad at this:
+    |    Warning: You have entered an insecure passphrase.               |
+    │ A passphrase should be at least 8 characters long.                 │
+    | A passphrase should contain at least 1 digit or                    │
+    │ special character                                                  |
+    │                                                                    │
+    │ <Take this one anyway>                      <Enter new passphrase> │
+
+Of course, I used this one anyways.
+
+After getting the ID of my new keypair, I exported the public key:
+
+    gpg --export E7228664 > hw-pubkey.asc
+
+I then got a detached signature for it:
+
+    gpg --output hw.sig --detach-sig hw-pubkey.asc 
+
+
+Now, running 
+    gpg2 --verify hw.sig hw-pubkey.asc
+Gives this output:
+    gpg: Signature made Wed 11 Mar 2020 10:51:28 PM PDT using RSA key ID E7228664
+    gpg: Good signature from "George Owen (Hi guys! I'm making a key pair) <gowin@g.ucla.edu>"

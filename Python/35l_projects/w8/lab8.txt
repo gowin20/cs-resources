@@ -1,0 +1,115 @@
+George Owen
+405196467
+
+Lab 8 Log
+--------------
+
+cd ~eggert/src/gnu/emacs-CS-35L/
+
+1. 
+    du estimates file space
+
+    du -sk . => 520828 Kb
+    du -sk .git => 358316 Kb
+
+    The total space used for the entire git repository is 520828 Kb.
+    The space used for working files can be found by subtracting the space used by the '.git' folder
+    from the total repository space.
+    The disk space used by the working files is 162512 Kb
+
+    It seems as if .git/objects/pack consumes the most space, with a size of 342032 Kb. This makes it by far the largest file in the repository.
+
+
+2.
+    I piped each command to "wc -l" to get a count o them
+    
+    "git branch --list" gives locals : there are 176
+
+    "git branch -r" gives remote : there are 177
+    (to get the number, I piped each command to wc -l)
+
+
+3.
+    git remote -v shows me that there's one repository that is remote to this one.
+
+    the repository's name is "origin", and it's found at this URL: https://git.savannah.gnu.org/git/emacs.git
+    It's listed as two repositories, as it is both the location that this repository fetches changes from and pushes changes to.
+
+4.
+
+	git for-each-ref iterates over all the references, and outputs information on each. We pipe it the list of all the branches to get information on them.
+
+	git branch --list | git for-each-ref --count=10 --sort=committerdate refs/heads
+
+		5448c0cce64b7f5277c820dcd3cd839f9388e241 commit	refs/heads/other-branches/miles-orphaned-changes
+		f4c1c47c5b311c19b4cd0c3296783fc83b6c19b9 commit	refs/heads/old-branches/branch-5_8
+		71c9ec5139c8cacdcdcc499a72f3800f1b84000a commit	refs/heads/other-branches/gerd_0001
+		f57c4de274087f802f52587b362acc2cee4c7833 commit	refs/heads/other-branches/custom_themes
+		f1f65349f47be2982fc2dfb3847c730e520703f6 commit	refs/heads/other-branches/gerd_int
+		1cda365bcc8ffdc03ea705be1ca0860e56149944 commit	refs/heads/old-branches/gerd_defvaralias
+		086514436a4cbc004a43a4ab331e29e3ad9da835 commit	refs/heads/other-branches/patches_21_0
+		3efcf1ddcd36f63a94845e8df2135ad02706fe8e commit	refs/heads/other-branches/gerd_big
+		f0643701da91a91f0c36dc356e00070f38af9ebe commit	refs/heads/other-branches/gerd_dbe
+		2c92b538e6b484cc731fa8d2225ed16459e9848c commit	refs/heads/other-branches/fx-branch
+
+
+5.
+	git rev-list master | wc -l
+
+	There are 139,583 commits in the master branch. That's quite a bit!
+
+6.
+	git rev-list --all | wc -l
+	
+	There are 143,910 commits in total. 
+	Comparing that number to the number of the previous question, we see that 139583/143910 , or about 97% of all commits are in the master branch.
+7.
+	"git shortlog" summarizes the output of "git log". I used this command to find the information necessary
+
+		git shortlog --after="2012-12-31" -n -s
+
+	"-n" sorts by number of commits per author
+	"-s" further shortens the output by omitting commit messages
+
+	Top 10 from this list:
+		3691  Eli Zaretskii
+		3647  Glenn Morris
+		3605  Paul Eggert
+		1806  Lars Ingebrigtsen
+		1784  Stefan Monnier
+		1571  Michael Albinus
+		619  Dmitry Gutov
+		576  Noam Postavsky
+		471  Alan Mackenzie
+		469  Juri Linkov
+
+8.
+
+	At first, I wanted to write a bash script to answe this.
+	I created a new file which contained the list of target hashes, and called it "targets"	
+	However, as I started to write it I realzied that it would be much faster to just find the commits manually (sadly this is also way less cool)
+
+	So, I used "git log --merges > ~/merges" to get a list of all the merge commits
+
+	Then, I used emacs pattern matching to find which commits were merges.
+
+	Not found / Not Immediately within a merge:
+		4ea37c2b8b0c5a68fde59770c3536195e0972217
+		977cd6cb28a37744966ec62f70cf62659f6f302a
+
+	0c06b93c1e467debd401eb0b3be4652fde14fa95
+	Merge from origin/emacs-26. Contains the following commits from the targets:	
+		625cee531623feddbe3174fad52c7db96ec60bb3 -> Present in merge 0c06b93: start emacs-26 release branch
+		5490ccc5ebf39759dfd084bbd31f464701a3e775 -> present in merge 0c06b93: Add lisp variable lcms-d65-xyz
+	
+	abcb2e62dae6aa26308f7ac9efc89247f89cbe65
+	Merge from origin/emacs-26. Contains the following commits from the targets:
+		00e4e3e9d273a193620c3a4bb4914e555cb8e343 -> Present in merge 98ac: Fix undecorated frame resizing issues on NS (bug#28512)
+		00e4e3e9d273a193620c3a4bb4914e555cb8e343 -> Present in merge 98ac: Fix undecorated frame resizing issues on NS (bug#28512)
+		49cd561dc62ea6b3fbedab7aef0f020733f4cf09 -> Present in merge 98ac: * test/lisp/tramp-tests.el (tramp-test21-file-links): Spec... 
+	
+	98ac36efe4ce4bd3a0bca76fc73ce6c7abaa4371
+	Merge from origin/emacs-26. Contains the three commits that abcb did from the targets:
+		00e4e3e9d273a193620c3a4bb4914e555cb8e343 -> Present in merge 98ac: Fix undecorated frame resizing issues on NS (bug#28512)
+		00e4e3e9d273a193620c3a4bb4914e555cb8e343 -> Present in merge 98ac: Fix undecorated frame resizing issues on NS (bug#28512)
+		49cd561dc62ea6b3fbedab7aef0f020733f4cf09 -> Present in merge 98ac: * test/lisp/tramp-tests.el (tramp-test21-file-links): Spec... 

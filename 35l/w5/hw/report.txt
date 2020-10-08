@@ -1,0 +1,151 @@
+George Owen
+405196467
+
+Lab 5 Log / Repost
+--------------
+LOG
+--------------
+
+The goal of this lab was to write two programs, tr2b and tr2u, which translate text from stdin in a manner similar to the coreutils "tr" command (but more simplistic).
+
+I started by writing tr2b.c - this program is not incredibly complex.
+The hardest part of this for me was learning how to parse arguments in C - argc is the number of args, and argv is an array containing these args.
+
+Actually parsing them was done in a manner similar to BASH arg parsing - many if statements making sure everything is good.
+
+The core function of this program is a small loop. It uses "getchar()" to read characters from stdin (as it is buffered),
+and uses putchar() to write to stdin (this is also buffered).
+
+Nice! The next program, tr2u.c, required changing surprisingly little code.
+
+The main (only) difference is that tr2u.c uses read() instead of getchar(), and write() instead of putchar().
+These are not buffered, and required learning lots of new stuff on my part. I got more familiar with the format of system calls like this,
+and learned that 0 is an alias for stdin while 1 is an alias for stdout.
+
+read() takes an array of characters as input - this differs from getchar(), which takes a single char as input. This took me forever to realize :)
+
+
+After I wrote these programs, I ran some tests to see how their performance differed. I used an Elisp program provided by someone on Piazza (Narayana Adisasmito-Smith) 
+to create a file containing 5 million bytes of random letters.
+I then tested my programs using this file (bigfile) as input:
+
+Copying file to another
+	strace ./tr2b a b < bigfile.txt > Bnewbig.txt
+	strace ./tr2u a b < bigfile.txt > Unewbig.txt
+
+Copying a file to stdout
+	strace ./tr2b a b < bigfile.txt
+	strace ./tr2u a b < bigfile.txt
+
+tr2b uses write commands with much larger buffers! one write command would take the form of write(1, "...", 1024)
+
+tr2u only ever writes one character at a time (and takes MUCH longer as a result)
+
+When we compare the times that these programs take:
+	time ./tr2b a b < bigfile.txt > Bnewbig.txt
+		real	0m0.111s
+		user	0m0.098s
+		sys	0m0.012s
+	time ./tr2u a b < bigfile.txt > Unewbig.txt
+		real	0m19.141s
+		user	0m5.516s
+		sys	0m13.623s
+
+As you can see, using buffers is so so so much faster. There are exponentially less system calls when using getchar(), 
+meaning that the kernel has less work and everything is better. Use buffers!
+
+
+
+--------------------------
+REPORT
+--------------------------
+
+To test my program, I created a simple shell script filecreator.sh that generates files. Here it is:
+
+#!/bin/bash
+num=$1
+newNum=$(( num / 10 ))
+for i in $(seq 1 $newNum );
+do
+	for j in $(seq 0 9);
+	do
+		echo $j >> $2
+	done
+done
+sed -i ':a;N;$!ba;s/\n/ /g' $2
+
+
+running ./filecreator.sh [num] [outfile] appends num instances of the numbers 0-9 seperated by spaces.
+
+./filecreator.sh 20 twentyBytes outputs:
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
+
+
+I stress-tested my programs using the commands:
+	time ./sfrobu < file > BfileOut
+	time ./sfrob < file > UfileOut
+
+where file is:
+
+zeroBytes
+	buff:
+		real	0m0.001s
+		user	0m0.002s
+		sys	0m0.000s
+	unbuff:
+		real	0m0.002s
+		user	0m0.002s
+		sys	0m0.000s
+hundredBytes
+	buff
+		real	0m0.003s
+		user	0m0.001s
+		sys	0m0.002s
+
+	unbuff
+		real	0m0.004s
+		user	0m0.001s
+		sys	0m0.003s
+
+thousandBytes
+	buff
+		real	0m0.023s
+		user	0m0.019s
+		sys	0m0.004s
+
+	unbuff
+		real	0m0.031s
+		user	0m0.019s
+		sys	0m0.011s
+
+tenkBytes
+	buff
+		real	0m3.310s
+		user	0m3.306s
+		sys	0m0.004s
+
+	unbuff
+		real	0m2.058s
+		user	0m2.010s
+		sys	0m0.048s
+
+hundredkBytes
+	buff
+		(a really long time)
+	unbuff
+		real	4m54.035s
+		user	4m53.563s
+		sys	0m0.452s
+
+It seems as if the number of bytes correlates quadratically with the time the program takes to run.
+Running a polynomial regression on the data gives this result:
+	y = 2.996374945·10-8 x^2 - 9.673087814·10-5 x + 3.553355293·10-2
+	with a coefficient of determination of 9.999999175·10^-1
+
+
+
+If we had to rewrite our code using system calls instead of malloc(), realloc(), and free(),
+we would use the system calls mmap(), brk(), and sbrk()
+	 brk() takes a pointer to some address, and sets the end of the data segment to the value specified by that pointer
+	 sbrk() takes an increment, increments the program's data space by increment bytes
+	 mmap() is more complicated - it makes new mappings in memory. It takes input of: a starting address, length of allocated memory, a file descriptor, and an offset within that file.

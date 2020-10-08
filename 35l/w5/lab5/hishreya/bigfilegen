@@ -1,0 +1,21 @@
+; define valid chars and how many to choose
+(setq letters "abcdefghijklmnopqrstuvwxyz")
+(setq charcount 5000000)
+
+; create new buffer called "bigfile"
+(setq mybuff "bigfile")
+(generate-new-buffer mybuff)
+
+; helper funcs
+(defun randchar (charset)
+	; get random char from string (charset)
+	(setq rand (random (length charset)))
+	(substring charset rand (1+ rand)))
+(defun insertto (buffer text)
+	; append string (text) to buffer (buffer)
+	(with-current-buffer buffer
+		(insert text)))
+
+; main loop: insert (charcount) random letters from (letters) into the new buffer *bigfile* and print "done" when finished
+(dotimes (i charcount "done")
+	(insertto mybuff (randchar letters)))

@@ -1,0 +1,104 @@
+lab3.txt
+
+
+I began this lab by downloading the coreutils tarball using 
+	wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
+
+Then verified its signature using 
+	gpg --verify --keyring ./gnu-keyring.gpg coreutils-8.29.tar.xz.sig
+	Output:
+		gpg: keyblock resource `./gnu-keyring.gpg': 
+		No such file or directory
+		gpg: can't open `coreutils-8.29.tar.xz.sig':
+		No such file or directory
+		gpg: verify signatures failed: 
+		No such file or directory
+The verification failed - it seems as if there is no signature file to verify.
+
+After (failing to) verify the keyring, I was ready to actually install coreutils
+
+	./configure --prefix=/u/eng/class/clasowe/35l/coreutilsinstall
+		using --prefix configures the coreutils package to install
+		 in the specified folder, instead of in /usr/bin
+	make
+		This command compiles and maintains all the 
+		code found within coreutils
+	make install
+		After running make, make install will actually install 
+		the package within the folder I specified
+
+With these three commands, coreutils installed properly 
+within the coreutilsinstall folder.
+
+
+Time to look for bug #30963
+	I was able to recreate the bug by using 
+	./ls -aA within the coreutils-8.29/src directory. 
+	This command outputted the contents of the current 
+	directory, but additionally
+	outputted the current directory '.' and the directory one level up '..'
+	That's the bug! They shouldn't do that.
+	I tested it on several different folders 
+	 using ./coreutils-8.29/src/ls -aA,
+	and the problem was present everywhere (duh)
+
+
+To begin fixing this, I found the patch online 
+via the provided link. I downloaded
+the patch file from:
+	https://debbugs.gnu.org/cgi/bugreport.cgi?
+	 bug=30963;msg=10;filename=0001-ls-A-now-overrides-a.patch;att=1
+and copy-pasted its contents into a new file named 
+lsfix.patch on the SEASnet server.
+This file is located within the coreutils-8.29 directory
+
+
+
+Looking at the patch file, it seems as if we will need 
+to strip one level of directory names from
+all the paths specified within the file 
+	a/src/ls.c  ==>  src/ls.c
+This means that -pnum is 1.
+
+Finally, I was ready to run the patch command:
+
+	patch -p1 <lsfix.patch 
+
+	Output:
+		patching file NEWS
+		Hunk #1 FAILED at 4.
+		1 out of 1 hunk FAILED -- saving rejects to file NEWS.rej
+		patching file src/ls.c
+		Hunk #1 succeeded at 1900 (offset -3 lines).
+		patching file tests/local.mk
+		patching file tests/ls/a-option.sh
+
+Note that one of our Hunks FAILED! 
+Luckily, this isn't a big deal. The patch file failed
+to sucessfully patch our news file. 
+The only change made to this file is adding a note about
+how Eggert fixed this bug. 
+We don't need that for our program to run properly.
+
+All of the other files were sucessfully patched. 
+Great! Next, I was ready to recompile and test it.
+
+I typed "make," and got a horrible error that confused me:
+	"WARNING: automake-1.15 is missing on your system [...]"
+I thought that I had really messed up at this point, 
+so I actually completely wiped my coreutils build
+and reinstalled everything a second time, then patched it again.
+It still didn't work! I gave up after a good amount of googling.
+
+A couple days later, I checked Piazza, where a 
+very helpful pinned thread informed me that I needed to run
+
+	autoreconf -fi
+
+This fixed my problem, and I was able to sucessfully 
+run "make" in my coreutils-8.29 directory
+
+After rebuilding coreutils, the bug was fixed!
+Running ./coreutils-8.29/src/ls -aA works as intended
+ - the A option overrides the a option,
+meaning '.' and '..' are not printed.

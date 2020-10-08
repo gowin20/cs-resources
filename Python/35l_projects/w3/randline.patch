@@ -1,0 +1,12 @@
+--- randline.py	(original)
++++ randline.py	(refactored)
+@@ -62,7 +62,8 @@
+         generator = randline(input_file)
+         for index in range(numlines):
+             sys.stdout.write(generator.chooseline())
+-    except IOError as (errno, strerror):
++    except IOError as xxx_todo_changeme:
++        (errno, strerror) = xxx_todo_changeme.args
+         parser.error("I/O error({0}): {1}".
+                      format(errno, strerror))
+ 

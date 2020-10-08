@@ -1,0 +1,105 @@
+George Owen
+405196467
+
+Homework 7 Log
+--------------
+
+1. 
+    hw7.txt
+    before beginning the homework, I moved all my lab stuff to a folder called lab7 to avoid confusion
+
+2.
+    created a new version of diffutils at version 3.0:
+        git clone ~eggert/src/gnu/diffutils diffhw
+        git checkout v3.0 -b quote
+
+3.
+    copied my patch into the diffhw/ directory, then ran "patch -p1 < quote-3.0-patch.txt
+    everything succeeded! I initially tried to patch without checking out the 3.0 branch, and everything failed.
+
+4 / 5: 
+    c-x 4 a opened a new changelog, where I formatted my changelog entry. After writing it, I was ready to commit.
+
+6:
+    First I added all my newly modified files to the staging area:
+        git add src/cmp.c
+        git add src/diff.c
+        git add src/diff3.c
+        git add src/dir.c 
+        git add src/sdiff.c 
+        git add src/util.c 
+
+    git commit -m "
+            * src/cmp.c: changed all backtik chars in character string constants to single quotes
+            * src/diff.c: changed all backtik chars in character string constants to single quotes
+            * src/diff3.c: changed all backtik chars in character string constants to single quotes
+            * src/dir.c: changed all backtik chars in character string constants to single quotes
+            * src/sdiff.c: changed all backtik chars in character string constants to single quotes
+            * src/util.c: changed all backtik chars in character string constants to single quotes
+    "
+    >  6 files changed, 43 insertions(+), 43 deletions(-)
+
+7. 
+    I formatted a new quote patch based off version 3.0 by running 
+        "git format-patch v3.0"
+    then renamed it to "formatted-patch.txt"
+    It had 351 lines, which was similar to the length of my previous patch.
+
+8.
+    git clone ~eggert/src/gnu/diffutils difftest
+    git checkout v3.0 -b patchery
+
+    cp ../diffhw/formatted-patch.txt .
+
+    at first, git am did not work properly for me. I needed to remove the .git/rebase-apply directory before it would.
+    after removing this directory, I excecuted:
+
+    git am < formatted-patch.txt
+    Applying: 2020-02-29 George Benton Owen <classowe@lnxsrv09.seas.ucla.edu>
+
+    After that, I built the system:
+        ./bootstrap
+        ./configure
+        make
+        make check
+    Just like in the lab, all 88 tests passed! It seems as if my system built perfectly.
+    running "./src/diff --help" outputs a help page, where ALL ` characters have been changed to '. I love it!
+9.
+    Running "make distdir" outputs a directory "diffutils-3.0.1-b7a1" containing a version of my code.
+        "emacs diffutils-3.0.1-b7a1/ChangLog"
+
+    the changelog contains my entry:
+
+    2020-02-29  George Benton Owen  <classowe@lnxsrv09.seas.ucla.edu>
+        * src/cmp.c: changed all backtik chars in character string constants to single quotes
+        ... <contents listed above> ...
+
+10.
+
+    cd ~eggert/src/gnu/emacs-CS-35L/
+
+    running "gitk" opens up a gui for browsing the git repository. 
+    running "gitk --until=2015-01-25" displays only those commits older than Jan. 25, 2015
+
+    The newest merge older than Jan. 25, 2015 is a merge on that date by Joakim Verona. Here is the commit:
+
+            Author: Joakim Verona <joakim@verona.se>  2015-01-25 12:19:27
+            Committer: Joakim Verona <joakim@verona.se>  2015-01-25 12:19:27
+            Parent: e5087278b9bcab5847ce63d80c0d74c27f50e719 (merge master)
+            Parent: a3689d3c661fe36df971c875760f8d500b5ae994 (Count MANY function args more reliably)
+            Child:  c251ec96117a847799a61338e7648da8a4ade9e0 (Fix visual glitch during webkit resizing)
+            Branches: master, remotes/origin/master and many more (254)
+            Follows: emacs-24.4
+            Precedes: emacs-25.0.90
+
+                Merge branch 'master' into xwidget
+
+    Gitk is pretty cool. The top window shows a list of commits over time, along with a commit history tree to visually represent them.
+    Each commit has an author credited, along with a date.
+    Clicking on a commit in the top window loads it into the bottom left window, where more information is shown on it. 
+    If the commit changed code/files, these changes are listed here in diff files. 
+    The bottom right window lists all the files included in the commit, for your browsing convenience. 
+    You can look at diff files for each modified file, as well as the entire repository at that point in history.
+
+    This specific merge merged the "master" branch (represented as a red line on the tree) into the xwidget branch (a pink line). 
+    This updates the xwidget branch to contain the commits made to "master" since the two were last merged.

@@ -1,0 +1,100 @@
+George Owen
+405-196-467
+Assignment 1
+Homework
+--------------
+
+
+Key Legend:
+	Up - Up arrow key
+	Down - Down arrow key
+	Left - Left arrow key
+	Right - Right arrow key
+
+Exercises:
+
+Up Up Down Down Left Right Left Right B A Enter
+
+1.1:
+	C-s H T M L 
+	Enter C-s s c a v e n g e r M-b
+	C-s s e l f - r e f e r e n t i a l M-b M-b
+	C-s a r r o w M-b
+	C-e
+	C-a
+	C-x C-s
+	C-z
+1.2:
+	M-g g 1 8 Enter
+	C-k
+	C-s D E L E T E Enter
+	M-0 C-k C-k
+	C-s w i k i p C-s Enter
+	Up C-a C-SP Down Down Down DEL
+	C-s < ! - - Enter Left Left Left Left C-M-k DEL
+	C-s < ! - - Enter C-a C-k
+	C-s < ! - - Enter C-a C-k
+	C-x C-s C-z
+1.3:
+	M-%
+	A s s i g n m e n t 1 Enter A s s i g n m e n t 4 2 Enter
+	SP SP Enter
+	M-%
+	U T F - 8 Enter U S - A S C I I Enter
+	SP Enter
+
+	C-M-s [ ^ [ : a s c i i : ] ] C-a C-k
+	C-M-s M-p C-a C-k
+	C-M-s M-p C-a C-k
+	M-< C-s < / o l > Enter
+
+1.4:
+	M-> up up C-k M-g g 4 4 8 Enter C-y
+	M-> M-a M-a M-a M-a M-a M-a right C-SP down down down down down C-w M-g g 4 3 0 C-y C-k DEL M-a M-a DEL up DEL
+	M-g g 4 7 7 Enter C-SP down down down C-w M-g g 3 8 7 C-y up up up DEL
+	M-g g 4 7 1 Enter right C-k M-g g 1 3 1 Enter C-y
+	M-g g 4 6 2 Enter right C-k M-g g 1 9 Enter C-y
+	C-s - - - C-a C-SP M-> C-w DEL
+	C-x u C-x u
+	- - > C-s - - - SP C-s C-a < ! - -
+	M-< M-% < o l > Enter < o L > Enter SP SP SP SP SP SP SP (found 7 instances of <oL>)
+	C-x C-s C-z
+1.5:
+	M-x m a k e - d i r e c t o r y Enter . . / j u n k Enter
+	C-x C-f . . / j u n k / h e l l o . c Enter
+	(I copy pasted the file contents from the webpage here)
+	C-x c o m p i l e Enter h e l l o . c h e l l o Enter 
+	M-! . / h e l l o Enter
+	M-x b * S h e l l Tab Enter
+	C-a C-k M-x b h e l l o - o u t Enter C-y
+	C-k C-x C-f k e y 1 . t x t Enter
+	C-> C-y
+	EOF on input
+1.6:
+	C-x b Enter
+	m o s t - n e g a t i v e - f i x n u m Enter
+	m o s t - p o s i t i v e - f i x n u m 
+	C-j
+	( f o r m a t SP " x " SP m o s t - p o s i t i v e - f i x n u m ) Enter
+	( f o r m a t SP " x " SP m o s t - n e g a t i v e - f i x n u m )
+	C-j
+		((These values are probably Tmax and Tmin for ELisp - the largest values that Elisp can handle))
+	( r a n d o m SP " 4 0 5 - 1 9 6 - 4 6 7 " ) Enter
+		((Value: -2176956122122307336))
+	( s e t q SP x SP ( r a n d o m ) ) Enter C-j 
+		((1423603844321779982))
+	( s e t q SP y SP ( r a n d o m ) ) Enter C-j 
+		((-1709190620336359230))
+	Enter ( * SP x SP y ) C-j 
+		((-1827142283277147292))
+	up C-k
+	( s e t q SP p SP C-y ) Enter C-j
+	( l o g i o r SP p SP m o s t - n e g a t i v e - f i x n u m ) Enter C-j 
+		((-478700725936546660))
+	((These integers x and y are computed from a list that is generated based off of what the random function is seeded with. In that sense, the randomness in part comes from what a user's UID is))
+
+	The number will be mathematically incorrect if an integer overflow occurs. An overflow will occur when the product of x and y is larger than Tmax, which is (2^61)-1 on 64-bit Emacs systems. At first this seems simple, but determining the percentage of time this will occur with truly random inputs is actually complex. The chance can be given by this equation (crudely written in a .txt document instead of latex)
+		The summation from 2^0-2^61 of (2^n*2^(61-n))
+		divided by
+		2^122
+	This is the number of possible cases resulting in integer overflow, divided by the total possible number of results. It's a surprisingly low chance to happen.

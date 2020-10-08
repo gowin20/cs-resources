@@ -1,0 +1,84 @@
+George Owen
+405-196-467
+Assignment 1
+Lab
+--------------
+
+
+1. man -k [printf] prints a list of all the commands that contain [printf] in their man page name / description (apropos [printf] does pretty much the same thing)
+
+2. which mv
+   	 /usr/local/cs/bin/mv
+   which sh
+   	 /usr/bin/sh
+
+3. find /usr/bin -executable -name ?r
+   	ar - creates/modifies/extracts things from archives
+	  pr - prints things! and converts files for printing
+	  tr - translates or deletes characters
+	(usage found using whatis [ar/pr/tr]. I also used man [ar/pr/tr]
+
+4.  /usr/bin/emacs-24.3
+
+    Commands used:
+    $ ls -l /usr/bin/emacs
+   	  (output:) lrwxrwxrwx 1 root root 23 Jan  2  2019 /usr/bin/emacs -> /etc/alternatives/emacs
+   	$ ls -l /etc/alternatives/emacs
+   	  (output:) lrwxrwxrwx 1 root root 19 Jan  2  2019 /etc/alternatives/emacs -> /usr/bin/emacs-24.3
+
+5. /usr/bin/gcc version number: gcc version 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC) 
+   default gcc (/usr/local/cs/bin/gcc): gcc version 9.2.0 (GCC) 
+
+   Commands used: 
+      whereis gcc
+      /usr/bin/gcc -v
+      gcc -v
+
+6. u+sx, o-w
+    modifies the user's permission to allow them to execute the file (x), and set the user/group ID on execution (s)
+    modifies [other users not in the file's group]'s permission to provent them from writing to the file (w)
+
+7. There are 101 total directories modified within the last four weeks in /usr/local/cs
+    
+    command used: find /usr/local/cs -type d -mtime -28 | wc -l
+
+    First five directories:
+      /usr/local/cs
+      /usr/local/cs/src/grep
+      /usr/local/cs/src/grep/RCS
+      /usr/local/cs/share/info
+      /usr/local/cs/share/man/man1
+  
+8. 303 Symbolic links
+    Command used: 
+    find /usr/bin -type l | wc
+
+9. Oldest file: librom1394.so.0.3.0, modified December 28th, 2013
+      command used: ls /usr/lib64 -ltca
+
+10. the locale command gets its data from the how the enviroment variables are set, such as LC_ADDRESS, LC_COLLATE, and so on.
+        Commands used:
+        man locale
+        man 7 locale
+
+11. downcase-dwim
+    downcase-region
+    downcase-word
+        Commands: C-h a, then queried with "downcase"
+
+12. C-M-r : reverse incremental regular expression search
+    C-M-s : (forward) incremental regular expression search
+    C-M-t : transpose two balanced expressions
+    C-M-u : Move up by parenthesis
+    C-M-v : scrolls to the next window
+
+        Definitions found by entering the Emacs manual (C-h r) then searching keywords with C-s
+
+13. C-g cancels out of partially typed commands, and stops in-progress commands, and generally quits/aborts most things
+        C-h r to enter manual, then searched though C-s
+
+  14. Yank is basically like paste. It yanks the content of the kill ring buffer and inserts it into the current cursor position. Easily invoked by typing C-y
+        no emacs commands used for this, my TA taught me
+
+15. The directory listing of emacs shows hidden files (similar to the ls -a command), while ls -l does not
+        Dired also lists the exact time (hours,minutes) associated with the file, while ls -l only does date

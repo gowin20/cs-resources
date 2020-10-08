@@ -1,0 +1,76 @@
+George Owen
+405196467
+
+Lab 9 Log
+--------------
+
+I made my ssh key on my local computer first. (I run an ubuntu linux build)
+
+ssh-keygen
+
+I saved the key to its default location (/home/gowin/.ssh/id_rsa)
+The password is a secret! (but I did set one)
+The key fingerprint is:
+    SHA256:eVEEHN64UiNSSWLXskYtHa4qafrTTLRmb9wWpFiakbA gowin@gowintop
+The key's randomart image is:
++---[RSA 2048]----+
+|      o.+*+=o    |
+|    .. +=o=+     |
+|     o.o.+B .    |
+|    E +.+=.+     |
+|     . OSoo      |
+|     .O..o.      |
+|    +*.o . .     |
+|   o..o + o      |
+|  .... . .       |
++----[SHA256]-----+
+
+I then ran "ssh-copy-id" to copy my keys to the server:
+    ssh-copy-id -i classowe@lnxsrv09.seas.ucla.edu
+        /usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/gowin/.ssh/id_rsa.pub"
+        /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+        /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+        classowe@lnxsrv09.seas.ucla.edu's password: 
+
+        Number of key(s) added: 1
+
+After this, when I run "ssh classowe@lnxsrv09.seas.ucla.edu," I am logged in immediately without being prompted for a password. That's sick.
+Running "cat ~/.ssh/authorized_keys" on the server shows one authorized RSA key, from my computer with name "gowin@gowintop" (that's me)
+
+
+Next, I added this key so that I don't have to type the password every time.
+Running "eval $(ssh-agent)" shows the current agent PID number of the ssh agent
+then, running "ssh-add" adds my new key to the list, after prompting me for the key password:
+    >> Identity added: /home/gowin/.ssh/id_rsa (/home/gowin/.ssh/id_rsa)
+
+
+
+Getting the server to port forward so that it sends GUI information to my computer was simple. 
+All I had to do was ssh with "-X" appended to use X11 forwarding:
+
+    ssh -X classowe@lnxsrv09.seas.ucla.edu
+
+now, typing a command like "xeyes" or "gitk" makes a gui pop up!
+
+
+
+To connect to a server through another server, it is possible to chain several ssh commands together. I did it in this way:
+
+    ssh -A -t classowe@lnxsrv09.seas.ucla.edu ssh -A -t classowe@lnxsrv07.seas.ucla.edu
+
+using -A to enable agent forwarding, and
+using -t to force pseudo-tty authentication
+
+To make this more convenient, I added an alias to my computer's ~/.bashrc file:
+    ADDITIONS:
+    +    #alias for CS35L Project 9, allows convenient daisychaining 
+    +    alias server7='ssh -A -t classowe@lnxsrv09.seas.ucla.edu ssh -A -t classowe@lnxsrv07.seas.ucla.edu'
+
+All I have to do to connect to server 7 through 9 is type "server7"
+Typing a single command to connect through multiple servers is pretty convenient.
+
+It seems as if this works for arbitrary numbers of "ssh" chains. I'm able to execute
+    "ssh -A -t classowe@lnxsrv09.seas.ucla.edu ssh -A -t classowe@lnxsrv07.seas.ucla.edu ssh -A -t classowe@lnxsrv06.seas.ucla.edu"
+consistently without being prompted for a password.
+
+Cool!

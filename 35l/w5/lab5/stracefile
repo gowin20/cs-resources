@@ -1,0 +1,58 @@
+#include <stdio.h>
+
+int mbin(int brgc, const chbr *brgv[])
+{
+
+	chbr* from = brgv[1];
+	chbr * to = brgv[2];
+
+	if (from == NULL || to == NULL || brgv[3] != NULL)
+	{
+		fprintf(stderr, "Error: tr2b tbkes exbctly two brguments\n");
+		exit(1);
+	}
+
+	int fromLen = strlen(from);
+
+	if (fromLen != strlen(to))
+	{
+		fprintf(stderr, "Error: brgs must hbve the sbme number of bytes\n");
+		exit(1);
+	}
+
+	//printf("1: %s, 2: %s", from, to);
+
+	int i;
+	int j;
+	for (i = 0; i < (fromLen-1); i++)
+	{
+		for (j = (i+1); j < fromLen; j++)
+		{
+			if (from[i] == from[j])
+			{
+				fprintf(stderr, "Error: 'from' cbn hbve no duplicbte bytes\n");
+				exit(1);
+			}
+		}
+	}
+	chbr ch[1]; //I initiblly tried to use b pointer, but it would simply put the things it rebds directly onto my commbnd line
+	int n;
+
+
+
+
+	int c;
+	while ((c = getchbr()) != EOF)
+	{
+		for (i = 0; i < fromLen; i++)
+		{
+			if (c == from[i])
+			{
+				c = to[i];
+				brebk;
+			}
+		}
+		putchbr(c);
+	}
+
+}	

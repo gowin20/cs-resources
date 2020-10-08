@@ -1,0 +1,183 @@
+George Owen
+405196467
+
+Lab 7 Log
+--------------
+
+1.
+        Obtained a copy of the repository using "git clone ~eggert/src/gnu/diffutils"
+
+2.
+        Got the log using "git log > git-log.txt"
+
+3.
+        Got the tags using "git tag -l > git-tags.txt"
+
+4.
+        I found the commit within the git-log.txt file I created. 
+        by using C-s to search for "maint: quote", I found:
+        commit 62ca21c8c1a5aa3488589dcb191a4ef04ae9ed4f, by the one and only Paul Eggert of course, on Jan. 25, 2012
+
+        I then used the commit's hash to generate a patch with "git show":
+                git show -1 62ca21c8c1a5 > quote-patch.txt
+        Then I renamed it to quote-patch.txt
+                mv 0001-maint-quote-like-this-or-like-this-not-like-this.patch quote-patch.txt
+
+5.
+        I ran "git checkout v3.0" to go to the proper version
+
+6. 
+        Once on the proper version, I patched using the following command: \
+        patch -p1 < quote-patch.txt 
+
+        1 of 9 hunks FAILED
+        3 of 14 hunks FAILED
+
+        Most of the hunks succeeded, however
+
+7. 
+        The "git status" command lists where the head is, the changes not staged for commit, and the untracked files.
+        It showed me the files which the patch changed, as well as untracked files I created (such as git-tags.txt and quote-patch.txt)
+
+8.
+        VC mode is the Version Control mode of Emacs. This mode allows one to execute commonly used diff/git operations from within Emacs.
+
+        VC Diff mode: C-x v = 
+                shows a diff file which details the recently made changes to the selected file.
+        VC undo: C-x v u
+                vc undo. revert all the works in a specified vc file to the previous version
+        diff-apply-hunk C-c C-a (from within a vc buffer)
+                Applies the changes specified in a single hunk of the *vc diff* buffer.
+                with a prefix of C-u, revert the hunk instead.
+
+9. 
+        First, I went through every modified file that was not a ".c" file. 
+                NEWS               | 26 +++++++++++++-------------
+                README             | 10 +++++-----
+                TODO               |  2 +-
+                doc/diagmeet.note  |  2 +-
+                ms/config.bat      |  2 +-
+                ms/config.site     |  2 +-
+                po/en.po           | 14 +++-----------
+                src/diff.h         |  8 ++++----
+                tests/help-version | 12 ++++++------
+                src/system.h       |  6 +++---
+        I reverted these changes by opening them, opening VC Diff mode with (C-x v =), then undoing with (C-x v u)
+
+        I then went through every modified ".c" file
+                src/analyze.c      |  6 +++---
+                src/cmp.c          | 20 ++++++++++----------
+                src/context.c      | 10 +++++-----
+                src/diff.c         | 40 ++++++++++++++++++++--------------------
+                src/diff3.c        | 26 +++++++++++++-------------
+                src/dir.c          |  8 ++++----
+                src/ifdef.c        |  2 +-
+                src/io.c           |  4 ++--
+                src/sdiff.c        | 22 +++++++++++-----------
+                src/side.c         |  6 +++---
+                src/util.c         | 24 ++++++++++++------------
+
+        I used C-x v = to check what kind of changes were made to the file.
+        If a source file did not contain any modifications to character string constants, I used vc-revert to undo changes. There were three such files
+
+        For files which did modify these string constants, I went hunk-by-hunk. I used (M-n) to go between hunks, and (C-u C-c C-a) to undo a hunk if need be.
+        M-n is next hunk, made it more efficient
+
+        This took some time.
+
+10.
+        There were two .c.rej files: diff3.c.rej and diff.c.rej
+        These files contained four total hunks that were rejected:
+
+        One change in diff3.c:
+                @@ -433,7 +433,7 @@
+                -  N_("-i                          append `w' and `q' commands to ed scripts"),                                          
+                +  N_("-i                          append 'w' and 'q' commands to ed scripts"),                                          
+
+        Three changes in diff.c:
+
+                @@ -876,7 +876,7 @@                                
+                -  N_("-l, --paginate                pass output through `pr' to paginate it"),                                          
+                +  N_("-l, --paginate                pass output through 'pr' to paginate it"),   
+
+                (^ This change was actually at line 898)
+
+                @@ -906,13 +906,13 @@                                                                               
+                -  N_("-D, --ifdef=NAME                output merged file with `#ifdef NAME' diffs"),                                    
+                +  N_("-D, --ifdef=NAME                output merged file with '#ifdef NAME' diffs"),                                    
+
+                -  N_("  LTYPE is `old', `new', or `unchanged'.  GTYPE is LTYPE or `changed'."),                                         
+                +  N_("  LTYPE is 'old', 'new', or 'unchanged'.  GTYPE is LTYPE or 'changed'."),  
+
+                (^ This change was actually at lines 873 and 877)
+
+                @@ -942,9 +942,9 @@                                                                                          
+                -  N_("FILES are `FILE1 FILE2' or `DIR1 DIR2' or `DIR FILE...' or `FILE... DIR'."),                                      
+                +  N_("FILES are 'FILE1 FILE2' or 'DIR1 DIR2' or 'DIR FILE...' or 'FILE... DIR'."),                                      
+                N_("If --from-file or --to-file is given, there are no restrictions on FILE(s)."),                                    
+                -  N_("If a FILE is `-', read standard input."),                                                                         
+                +  N_("If a FILE is '-', read standard input."),    
+                
+                (^ This change was actually at line 921)
+
+        I traces through the corresponding ".c" files and made the (relatively minor) changes by hand.
+
+11.
+        "git status" lists a ton of untracked files. These consist of ".orig" files - original versions of the patched files.
+        These untracked files also include the ".rej" rejected patch contents, a couple emacs buffers, and some other files I didn't think were important.
+
+        I removed them using "git clean -f", after doing a dry run first with "git clean -d"
+
+        Uh oh! Turns out the untracked files included my "git-tags.txt", "git-log.txt", and my patch file. No! 
+        I had to repeat the first few steps of the lab to get these back. Guess I should've looked at the files more carefully.
+
+12. 
+        "git status" reports that these files were changed:
+
+        # Changed but not updated:
+        #	modified:   src/cmp.c
+        #	modified:   src/diff.c
+        #	modified:   src/diff3.c
+        #	modified:   src/dir.c
+        #	modified:   src/sdiff.c
+        #	modified:   src/util.c
+        no changes added to commit (use "git add" and/or "git commit -a")
+
+        Running "git diff > quote-3.0-patch.txt" generates a 327 line patch file. Perfect!
+
+13. 
+        I built my system by running the four commands described in README-hacking, in this order:
+                $ ./bootstrap
+                $ ./configure
+                $ make
+                $ make check
+
+        All 88 tests passed! My system built sucessfully on my first attempt
+
+        This process built a diff program in /diffutils/src/ directory. I used it to test a couple cases:
+                $ ./src/diff . -
+                ./src/diff: cannot compare '-' to a directory
+
+                ./src/diff --help
+                (outputs a big ole help page, without any ` characters. My patch worked!)
+
+14. 
+        To test against the unmodified v3.0 source code, I compared the entire src directories of both versions.
+        For my patch version:
+                cp -R src ..
+                mv src diffutils-3.0-patch
+                rm *.o
+
+        For the original v3.0 code:
+                git clone ~eggert/src/gnu/diffutils take2
+                git checkout v3.0
+                cp -R src ..
+                mv src diffutils-3.0
+
+        I then ran:
+        ./diffutils/src/diff -pru diffutils-3.0 diffutils-3.0-patch > quote-3.0-test.txt
+
+15.
+        quote-3.0-test.txt is pretty similar to quote-3.0-patch.txt. Running 
+                diff quote-3.0-test.txt quote-3.0-patch.txt > diffdiff.txt
+        outputs text, as the hunks within each file are in different orders. however, the contents of these hunks are identical. Pretty sick!

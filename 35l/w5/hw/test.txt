@@ -1,0 +1,34 @@
+lab.txt
+
+
+strace
+
+Copying file to another
+	strace ./tr2b a b < bigfile.txt > Bnewbig.txt
+	strace ./tr2u a b < bigfile.txt > Unewbig.txt
+
+Copying a file to stdout
+	strace ./tr2b a b < bigfile.txt
+	strace ./tr2u a b < bigfile.txt
+
+tr2b uses write commands with much larger buffers! one write command would take the form of write(1, "...", 1024)
+
+tr2u only ever writes one character at a time (and takes MUCH longer as a result)
+
+When we compare the times that these programs take:
+	time ./tr2b a b < bigfile.txt > Bnewbig.txt
+		real	0m0.111s
+		user	0m0.098s
+		sys	0m0.012s
+	time ./tr2u a b < bigfile.txt > Unewbig.txt
+		real	0m19.141s
+		user	0m5.516s
+		sys	0m13.623s
+
+
+
+
+
+
+
+this guy is loud!!!! use your inside voice please

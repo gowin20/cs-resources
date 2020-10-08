@@ -1,0 +1,42 @@
+hw3.txt
+
+Q1:
+	Our patch to ls makes the performance of the script negligibly worse.
+	Since more lines of code are executed, running the script takes longer
+		time ls
+	gives 0.002 seconds, while
+		time ./coreutils-8.29/src/ls
+	gives 0.002 seconds as well. It doesn't drastically change runtime.
+
+Q2:
+	This patch should not cause additional issues 
+	for the vast majority of the time.
+	However, if users write a shell script that uses ls -aA, 
+	and that script requires the current and top-level directories
+	to be listed, then that will be an issue. 
+	Just be smart about usage and it should be fine.
+	
+Q3:
+	When the randline script is invoked on an empty file, it throws 
+	an error "list index out of range"
+	this is because there are no lines to read from.
+
+Q4:
+	When the randline script is invoked using python3, 
+	it gives a syntax error.
+	Python3 changed the syntax of things such as exception statements. 
+	This means we need to say something like
+		except IOError as err:
+			(errno, strerror) = err.args
+	instead of
+		except IOError as (errno, strerror)
+
+Q5:
+	When running my shuf.py code in Python2, 
+	most functionality is preserved.
+	Specifically, all of the options and arguments work 
+	except for the ones that read from stdin.
+	Calling the function without any arguments, 
+	or with a single '-' argument produces an error,
+	as the input() command is not compatible with Python2
+

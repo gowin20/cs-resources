@@ -1,0 +1,55 @@
+George Owen
+405196467
+
+Lab 5 Log
+--------------
+
+
+The goal of this lab was to write two programs, tr2b and tr2u, which translate text from stdin in a manner similar to the coreutils "tr" command (but more simplistic).
+
+I started by writing tr2b.c - this program is not incredibly complex.
+The hardest part of this for me was learning how to parse arguments in C - argc is the number of args, and argv is an array containing these args.
+
+Actually parsing them was done in a manner similar to BASH arg parsing - many if statements making sure everything is good.
+
+The core function of this program is a small loop. It uses "getchar()" to read characters from stdin (as it is buffered),
+and uses putchar() to write to stdin (this is also buffered).
+
+Nice! The next program, tr2u.c, required changing surprisingly little code.
+
+The main (only) difference is that tr2u.c uses read() instead of getchar(), and write() instead of putchar().
+These are not buffered, and required learning lots of new stuff on my part. I got more familiar with the format of system calls like this,
+and learned that 0 is an alias for stdin while 1 is an alias for stdout.
+
+read() takes an array of characters as input - this differs from getchar(), which takes a single char as input. This took me forever to realize :)
+
+
+
+After I wrote these programs, I ran some tests to see how their performance differed. I used an Elisp program provided by someone on Piazza (Narayana Adisasmito-Smith) 
+to create a file containing 5 million bytes of random letters.
+I then tested my programs using this file (bigfile) as input:
+
+Copying file to another
+	strace ./tr2b a b < bigfile.txt > Bnewbig.txt
+	strace ./tr2u a b < bigfile.txt > Unewbig.txt
+
+Copying a file to stdout
+	strace ./tr2b a b < bigfile.txt
+	strace ./tr2u a b < bigfile.txt
+
+tr2b uses write commands with much larger buffers! one write command would take the form of write(1, "...", 1024)
+
+tr2u only ever writes one character at a time (and takes MUCH longer as a result)
+
+When we compare the times that these programs take:
+	time ./tr2b a b < bigfile.txt > Bnewbig.txt
+		real	0m0.111s
+		user	0m0.098s
+		sys	0m0.012s
+	time ./tr2u a b < bigfile.txt > Unewbig.txt
+		real	0m19.141s
+		user	0m5.516s
+		sys	0m13.623s
+
+As you can see, using buffers is so so so much faster. There are exponentially less system calls when using getchar(), 
+meaning that the kernel has less work and everything is better. Use buffers!
