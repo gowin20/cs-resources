@@ -1,5 +1,5 @@
 open List
-
+open Stdlib
 (* remove this before submitting!!! *)
 open Format
 
@@ -61,9 +61,9 @@ printf "%B" (subset strSetA strSetB);; *)
 (* 2. Equal Sets *)
 let equal_sets a b = ((subset a b) && (subset b a));;
 
-(* testing 2. *)
+(* testing 2.
 printf "%B" (equal_sets setA setA);;
-
+*)
 
 
 (* 3. Set Union *)
@@ -96,5 +96,17 @@ let rec set_difference a b =
         [] -> []
         | head::body -> if (inSet head b) then set_difference body b
                         else head::(set_difference body b);;
-(* testing 5. *)
+(* testing 5.
 let () = List.iter (printf "%d") (set_difference setB setA)
+ *)
+
+
+
+
+(* 6. Computed Fixed Points *)
+
+let rec computed_fixed_point eq f x =
+  if (eq (x) (f x)) then x
+  else computed_fixed_point eq (f) (f x);;
+
+print_int (computed_fixed_point (=) (fun x -> x / 2) 1000000000);;
