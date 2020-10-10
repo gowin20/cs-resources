@@ -110,3 +110,73 @@ let rec computed_fixed_point eq f x =
   else computed_fixed_point eq (f) (f x);;
 
 print_int (computed_fixed_point (=) (fun x -> x / 2) 1000000000);;
+
+
+
+
+(* 7. Filter Reachable Grammar Rules 
+
+Write a function filter_reachable g that returns a copy of the grammar g with all unreachable rules removed. 
+This function should preserve the order of rules: 
+that is, all rules that are returned should be in the same order as the rules in g.
+
+
+takes in a list
+creates a new list of rules that you can actually reach from the starting symbol
+then reverses the order at the end
+
+
+rule:
+    A pair, consisting of (1) a nonterminal value (the left hand side of the grammar rule) and (2) a right hand side.
+grammar:
+    A pair, consisting of a start symbol and a list of rules. The start symbol is a nonterminal value.
+
+
+function which starts at the start symbol, then recursively goes through and applies all possible rules
+if a rule is applied, then it's added to the list of "reachable_rules"
+
+at the end, we compare against the actual grammar and sort the rules, 
+then repair them with the starting symbol for returning
+
+*)
+
+(*  helper function which takes in a list of grammar rules and returns a list that is reachable from the starting symbol 
+a symbol -> a list -> a list -> <func> *)
+let rec clean_rules s r =
+  match r with
+  | [] -> []
+  | rule::rest -> let reachable_rules = clean_rules s rest in (* cycle through all the rules and compare against the initial symbol first *)
+                  let r_Sym = fst rule in
+                  if s = r_Sym then
+                    let r_Body = snd rule in (* this is the rule itself. Match it and explore recursively into it *)
+                    match r_Body with
+                    | []
+                    | 
+                  (*if a rule is found, it's in the reachable rules. explore this recursively then combine s with the recursive call, then concat with reachable_rules *)
+                  else reachable_rules;;(*if the rule isn't reachable with this symbol, we don't need to keep looking. Just return the clean_rules)
+
+
+let rec filter_reachable g =
+  let starting_symbol = fst g in
+  let rule_list = snd g in
+
+  match rule_list with
+  | [] -> []
+  |
+
+
+
+
+
+
+
+
+
+let rec cleaned lst_of_symbols = 
+	match lst_of_symbols with
+	| [] -> []
+	| first::rest_symbols ->
+		let cleaned_rest_symbols = cleaned rest_symbols in (*actual recursive call takes place here, returned as a list called cleaned_rest_symbols *)
+		match first_symbol with (*figure out if a symbol in our grammar is okay *)
+		| N sym -> sym::cleaned_rest_symcols (*nonterminal type with a value of "sym" => add it to the rest *)
+		| T _ -> cleaned_rest_symbols;; (* terminal symbol with no value => don't add it to the rest *)
