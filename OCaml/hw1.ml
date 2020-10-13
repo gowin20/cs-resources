@@ -27,7 +27,7 @@ O(n) time
 *)
 let rec inSet a b = 
   match b with
-    [] -> false
+  | [] -> false
   | head::body ->
       if a = head then true
       else inSet a body;;
@@ -139,44 +139,68 @@ at the end, we compare against the actual grammar and sort the rules,
 then repair them with the starting symbol for returning
 
 *)
-
 (*  helper function which takes in a list of grammar rules and returns a list that is reachable from the starting symbol 
 a symbol -> a list -> a list -> <func> *)
-let rec clean_rules s r =
-  match r with
-  | [] -> []
-  | rule::rest -> let reachable_rules = clean_rules s rest in (* cycle through all the rules and compare against the initial symbol first *)
-                  let r_Sym = fst rule in
-                  if s = r_Sym then
-                    let r_Body = snd rule in (* this is the rule itself. Match it and explore recursively into it *)
-                    match r_Body with
-                    | []
-                    | 
-                  (*if a rule is found, it's in the reachable rules. explore this recursively then combine s with the recursive call, then concat with reachable_rules *)
-                  else reachable_rules;;(*if the rule isn't reachable with this symbol, we don't need to keep looking. Just return the clean_rules)
 
+
+
+(* takes in a list of symbols and returns a list of the nonterminals
+excludes an inputted nonterminal symbol for less recursion
+ *)
+let rec cleaned lst_of_symbols exclude = 
+	match lst_of_symbols with
+	| [] -> []
+	| first_symbol::rest_symbols ->
+		let cleaned_rest_symbols = cleaned rest_symbols exclude in (*actual recursive call takes place here, returned as a list called cleaned_rest_symbols *)
+		match first_symbol with (*figure out if a symbol in our grammar is okay *)
+		| N sym -> if sym = exclude then cleaned_rest_symbols
+               else sym::cleaned_rest_symbols (*nonterminal type with a value of "sym" => add it to the rest *)
+		| T _ -> cleaned_rest_symbols;; (* terminal symbol with no value => don't add it to the rest *)
+
+
+
+(* 
+Clean_Rules function returns a list of rules reachable from the inputted grammar
+- cycle through each rule and check if it can be applied to the given symbol
+- if the rule can be applied, add it to the reachable_rules list and check the rest
+- otherwise, don't add it to the list, but still check the rest of the rules
+
+- clean rule body and remove any terminal symbols. form: list of nonterminal symbols
+- map clean_rules function to the cleaned list of nonterminal symbols to obtain a list of lists containing valid rules
+- concat and append to each other recursive call for the other valid rules
+
+map clean rules function to cleaned list of r_Body nonterminal symbols
+concat list of lists and append to the rest
+*)
+
+
+
+let rec clean_rules sym rules =
+  match rules with (*cycle through all rules and check if they can be applied to the symbol *)
+  | [] -> [] (*base case: done *)
+  | rule::rest_rules -> let cleaned_rules = clean_rules sym rest_rules in (* clean the rest of the rules against this symbol *)
+                        (* if inSet rule cleaned_rules then cleaned_rules *)
+                        let rule_sym = fst rule in
+                          if sym = rule_sym then let rule_body = snd rule in (*this means the rule is reachable *)
+                            let rule_nonterminals = cleaned rule_body sym in
+                            let deep_rules = concat_map (fun s -> clean_rules s rules) rule_nonterminals in 
+                            append (rule::cleaned_rules) (deep_rules)(*form the actual list *)
+                            (*call the function with every nonterminal symbol in the rule body *)
+                        else cleaned_rules;; (*just return the cleaned rules up to this point otherwise *)
+
+
+
+
+
+let rec sort_unique_rules order actual =
+  match order with
+  | [] -> []
+  | head::rest -> if inSet head actual then head::sort_unique_rules rest actual
+                  else sort_unique_rules rest actual
 
 let rec filter_reachable g =
   let starting_symbol = fst g in
   let rule_list = snd g in
-
-  match rule_list with
-  | [] -> []
-  |
-
-
-
-
-
-
-
-
-
-let rec cleaned lst_of_symbols = 
-	match lst_of_symbols with
-	| [] -> []
-	| first::rest_symbols ->
-		let cleaned_rest_symbols = cleaned rest_symbols in (*actual recursive call takes place here, returned as a list called cleaned_rest_symbols *)
-		match first_symbol with (*figure out if a symbol in our grammar is okay *)
-		| N sym -> sym::cleaned_rest_symcols (*nonterminal type with a value of "sym" => add it to the rest *)
-		| T _ -> cleaned_rest_symbols;; (* terminal symbol with no value => don't add it to the rest *)
+  let clean_rule_list = clean_rules starting_symbol rule_list in
+  let sort_u_rule_list = sort_unique_rules rule_list clean_rule_list in
+  (starting_symbol,sort_u_rule_list);;
