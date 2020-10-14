@@ -1,0 +1,12 @@
+hw1.txt
+
+write-up (< 2000 bytes) containing a brief after-action report 
+    that summarizes why you solved the problem the way you did, 
+    other approaches that you considered and rejected (and why you rejected them), 
+    and any weaknesses in your solution in the context of its intended application
+
+
+TODO (do with Shreya tonight):
+
+write-up
+test cases for the filter_reachable function (my own grammar)
