@@ -98,9 +98,7 @@ let rec cleaned lst_of_symbols =
 (* helper function for filter_reachable
 contains the main logic of the program! This is the core function which looks at the list of rules, then returns all the reachable ones
 
-this function ended up being pretty similar to those from LING 185A, (computational linguistics), which uses Haskell
-*)
-
+this function ended up being pretty similar to those from LING 185A, (computational linguistics), which uses Haskell *)
 (* symbol is the symbol we're looking for in the rules. It starts with whatever is inputted, then is used in the deeper recursion *)
 (* iter_rules is a copy of the rules list used to iterate through the top-level recursion. Checks a symbol against every rule*)
 (* master is a reference point containing all the rules to check. Used when switching symbols *)
@@ -117,8 +115,28 @@ let rec clean_rules sym iter_rules master =
             append (rule::cleaned_rules) (deep_rules)(* form the actual list by smushing the two recursive calls together *)
           else cleaned_rules;;(* if the rule isn't a match, just return the cleaned rules up to this point *)
 
-(* ---- sort_unique_rules ---- *)
+(* 
+me attempting to rewrite this function using only 2 parameters
+i ran out of time
 
+let rec clean_rules sym rules =
+  match rules with (*cycle through all rules and check if they can be applied to the symbol *)
+  | [] -> [] (*base case: done *)
+  | rule::rest_rules -> (* clean the rest of the rules against this symbol *)
+          let duplicated_rules = rest_rules@[rule] in
+          let rule_sym = fst rule in
+          let cleaned_rules = clean_rules sym duplicated_rules in (* top-level recursion checks one symbol against all rules *)
+          if sym = rule_sym then let rule_body = snd rule in (*this means the rule is reachable *)
+            let rule_nonterminals = cleaned rule_body in (* a cleaned-up version of the rule body. Contains only nonterminal symbols to recurse into *)
+            let new_duplicated_rules = set_difference duplicated_rules [rule] in            
+            let deep_rules = concat_map (fun s -> clean_rules s new_duplicated_rules) rule_nonterminals in (*call the function with every nonterminal symbol in the rule body *)
+            append (rule::cleaned_rules) (deep_rules)(* form the actual list by smushing the two recursive calls together *)
+          else cleaned_rules;;(* if the rule isn't a match, just return the cleaned rules up to this point *)
+*)
+
+
+
+(* ---- sort_unique_rules ---- *)
 (* helper function sorts rules and removes duplicates 
 it does so by comparing the actual clean_rule_list (that clean_rules just created) to the original list of rules, which has the correct order
 it then builds a new list from this
@@ -126,7 +144,7 @@ it then builds a new list from this
 let rec sort_unique_rules order actual =
   match order with
   | [] -> []
-  | head::rest -> if inSet head actual then head::sort_unique_rules rest actual
+  | head::rest -> if inSet head actual then head::(sort_unique_rules rest actual)
                   else sort_unique_rules rest actual
 
 
@@ -140,20 +158,3 @@ let filter_reachable g =
   let clean_rule_list = clean_rules starting_symbol rule_list rule_list in
   let sort_u_rule_list = sort_unique_rules rule_list clean_rule_list in
   (starting_symbol,sort_u_rule_list);;
-
-
-
-
-(* ---- working notes ----
-clean_rules function returns a list of rules reachable from the inputted grammar
-- cycle through each rule and check if it can be applied to the given symbol
-- if the rule can be applied, add it to the reachable_rules list and check the rest
-- otherwise, don't add it to the list, but still check the rest of the rules
-
-- clean rule body and remove any terminal symbols. form: list of nonterminal symbols
-- map clean_rules function to the cleaned list of nonterminal symbols to obtain a list of lists containing valid rules
-- concat and append to each other recursive call for the other valid rules
-
-map clean rules function to cleaned list of r_Body nonterminal symbols
-concat list of lists and append to the rest
-*)
