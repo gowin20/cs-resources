@@ -25,7 +25,7 @@ let awksub_rules =
     Incrop, [T"--"];
     Binop, [T"+"];
     Binop, [T"-"];
-    Num, [T"0"];
+    Num, [T"0";];
     Num, [T"1"];
     Num, [T"2"];
     Num, [T"3"];

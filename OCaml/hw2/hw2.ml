@@ -1,5 +1,8 @@
 open List
 
+
+
+open String
 (* Homework 2. More grammar stuff *)
 
 type ('nonterminal, 'terminal) parse_tree =
@@ -92,13 +95,78 @@ function is_substring
 
 2. call "accept" on the suffix
   if it's not accepted, we have to keep finding a new prefix until it is
+
+
+"1" "+" "$" "7"
+
+
+++ $ 1
+
+"1+2"
+
+1
+1+
+1+2
+
+
+1;2;3;
+Expr;Binop;Expr
+
+"1";Binop;"2"
+
+Expr -> "5";"+";"2"
+
+
+
+"1";
+
+
+
+k indicates position in the string
+
+Expr -> Incrop Expr
+Expr -> Num
+Num -> 1
+Incrop -> ++
+
+++ 1
+
+
+Expr -> Incrop Expr --------- k=1, check incrop first
+Incrop -> ++ ------------ check against kth character
+match! ------------------ k++
+if no match for the first sym found, exit
+
+keep going on Expr -> Incrop Expr ------------------------ k = 2
+
+Expr -> Incrop Expr
+  Incrop -> ++ ---------------------- check againt kth character
+  no match! -------------------- exit out of that rule
+Expr -> Num ---------------------- k=2
+Num -> 1 --------------------------- check against kth character
+match! ----------------------------- k++
+
+match found
+
+
 *)
 
 
 
+let rec find_match gram rule prefix =
+  if prefix = rule then 
 
 
 
+let rec find_prefix gram term =
+  let start_sym = fst gram in
+  let prod_fun = snd gram in
+  let alternative_rules = prod_fun start_sym in
+  match alternative_rules with
+  | [] ->
+  | rule::rest -> match symbol with
+                  | N sym ->
+                  | T leaf -> if term = leaf then 
 
 (* hw 2 style grammar rules: 
 
