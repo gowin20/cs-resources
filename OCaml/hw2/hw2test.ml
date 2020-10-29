@@ -214,6 +214,24 @@ let deriv2 = construct_deriv awkish_grammar ["(";"9";"+";"1";")"]
 
 let deriv3 = construct_deriv awkish_grammar ["(";"9";"+";"$";"1";")"]
 
+let deriv4 = construct_deriv awkish_grammar ["$";"9";"++"]
+
+
+
+let tree0 = pass_deriv_to_tree deriv0
+
+let tree1 = pass_deriv_to_tree deriv1
+
+let tree2 = pass_deriv_to_tree deriv2
+
+
+let tree4 = pass_deriv_to_tree deriv4
+
+
+let exfrag = ["1";"2";"3";"4";"5"]
+
+let excl1 = exclude_n exfrag 2
+
 (*
 let sample_hw2rulelist = [(N "a",["yes"]);(N "b",["nice"]);(N "c",["test"])]
 

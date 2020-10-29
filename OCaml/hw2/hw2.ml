@@ -314,7 +314,6 @@ and derive_nonterminal s_sym prod_fun alt_rules accept frag path =
                         | Some apath -> complete_path
 
 
-
 let construct_deriv gram frag =
   let fst_sym = fst gram in
   let prod_fun = snd gram in
@@ -325,9 +324,81 @@ let construct_deriv gram frag =
   | Some deriv -> Some (List.rev deriv)
   
 
+
+let build_leaf terminal = Leaf (terminal)
+
+
+let deriv_done (deriv : (('nonterminal * ('nonterminal, 'terminal) symbol List.t) list t)) =
+  match deriv with
+  | Some [] -> []
+(* returns a packet containing (num of rules used),(body of rule) *)
+
+
+let rec exclude_n lst n =
+  match lst with
+  | [] -> []
+  | item::rest -> if (n > 0) then exclude_n rest (n-1)
+                  else item::(exclude_n rest n)
+
+let rec build_node_body (body : (('nonterminal, 'terminal) symbol List.t)) (deriv : (('nonterminal * ('nonterminal, 'terminal) symbol List.t) list)) (numRules) = 
+  match body with
+  | [] -> (numRules,[])
+  | b_sym::b_rest -> match b_sym with
+                     | N s -> let tree_packet = make_tree (deriv) (numRules) in
+                              let rules_used = (fst tree_packet) - (numRules) in
+                              let tree = snd tree_packet in
+                              let remaining_deriv = exclude_n deriv rules_used in
+                              let rest_body_packet = build_node_body (b_rest) (remaining_deriv) (fst tree_packet) in
+                              let total_rules = fst rest_body_packet in
+                              let rest_body = snd rest_body_packet in
+                              (total_rules,(tree::rest_body))
+                     | T s -> let this_leaf = (Leaf s) in
+                              let rest_body_packet = build_node_body (b_rest) (deriv) (numRules) in
+                              let total_rules = fst rest_body_packet in
+                              let rest_body = snd rest_body_packet in
+                              (total_rules,(this_leaf::rest_body))
+
+(* constructs a tree, given a DFS Path and a starting symbol + rule *)
+and make_tree (deriv : (('nonterminal * ('nonterminal, 'terminal) symbol List.t) list)) (numRules) =
+  match deriv with
+  | (d_rule::d_rest) -> let (sym,rhs) = d_rule in
+                           let node_body_packet = build_node_body (rhs) (d_rest) (numRules+1) in
+                           let num_rules = fst node_body_packet in
+                           let node_body = snd node_body_packet in
+                           (num_rules,(Node (sym,node_body)))
+
+let pass_deriv_to_tree deriv =
+  match deriv with
+  | None -> None
+  | Some d -> Some (make_tree d 0)
+
+
+(*: (('nonterminal, 'terminal) symbol List.t)))*)
+(* : (('nonterminal * ('nonterminal, 'terminal) symbol List.t) list t))*)
 (*
 (* returns a leaf node 
 
+let build_leaf terminal = Leaf (terminal)
+
+
+let deriv_done (deriv : (('nonterminal * ('nonterminal, 'terminal) symbol List.t) list t)) =
+  match deriv with
+  | Some [] -> []
+
+let rec build_node_body (body : (('nonterminal, 'terminal) symbol List.t)) (accept) (deriv : (('nonterminal * ('nonterminal, 'terminal) symbol List.t) list t)) = 
+  match body with
+  | [] -> accept deriv
+  | b_sym::b_rest -> let accept_rest = build_node_body (b_rest) (accept) in
+                     match b_sym with
+                     | N s -> (make_tree (deriv) (accept_rest))
+                     | T s -> [Leaf s]
+
+(* constructs a tree, given a DFS Path and a starting symbol + rule *)
+and make_tree (deriv : (('nonterminal * ('nonterminal, 'terminal) symbol List.t) list t)) (accept) =
+  match deriv with
+  | Some (d_rule::d_rest) -> let (sym,rhs) = d_rule in
+                           let node_body = build_node_body (rhs) (accept) (Some d_rest) in
+                           Node (sym,node_body)
 unnecessary?
 *)
 let make_leaf terminal frag = 
