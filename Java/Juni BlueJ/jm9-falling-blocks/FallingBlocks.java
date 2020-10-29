@@ -57,7 +57,7 @@ public class FallingBlocks extends Applet implements Runnable
                
                repaint();
                try {
-                    Thread.sleep(10);
+                    Thread.sleep(100);
                }
                catch (Exception e) {}
             }

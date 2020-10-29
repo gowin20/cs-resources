@@ -7,7 +7,7 @@ public class BlockGame extends Applet implements KeyListener, Runnable
     Block[][] grid = new Block[20][20];
     Block currBlock;
     Thread t = null;
-    
+    int sleepTime = 300;
     public void start()
     {
         t = new Thread(this);
@@ -18,6 +18,31 @@ public class BlockGame extends Applet implements KeyListener, Runnable
     {
         setBackground(Color.black);
         addKeyListener(this);
+    }
+    
+    
+    public boolean filledRow(int rowToCheck) {
+        for (int c = 0; c < 20; c++) {
+            if (grid[rowToCheck][c] == null) return false;
+        }
+        return true;
+    }
+    
+    public void shiftGrid(int amount) {
+        
+        for (int r = 19; r >= 0; r--) {
+            for (int c = 0; c < 20; c++) {
+                
+                if (r != 19) {
+                    Block thisBlock = grid[r][c];
+                    if (thisBlock != null) {
+                        thisBlock.setRow(r+1);
+                    }
+                    grid[r+1][c] = thisBlock;
+               }
+               grid[r][c] = null;
+            }
+        }
     }
     
     public void run()
@@ -41,27 +66,27 @@ public class BlockGame extends Applet implements KeyListener, Runnable
                int currCol = currBlock.getCol();
                
                // check if Block has hit the bottom
-               if (currRow == 19) {
+               if ((currRow == 19) || (grid[currRow+1][currCol] != null)) {
+                   sleepTime = 300;
                    break;
-               }
-               
-               // check if there is another Block below this Block
-               else if (grid[currRow+1][currCol] != null) {
-                   break;
-               }
-               
+               }               
                // drop Block down by one row
                else {
                    grid[currRow][currCol] = null;
                    grid[currRow+1][currCol] = currBlock;
                    currBlock.setRow(currRow+1);
                }
-               
+
                repaint();
                try {
-                    Thread.sleep(50);
+                    Thread.sleep(sleepTime);
                }
                catch (Exception e) {}
+               
+               if (filledRow(19)) {
+                   shiftGrid(1);
+                   repaint();
+                }
             }
        }
     }
@@ -72,7 +97,9 @@ public class BlockGame extends Applet implements KeyListener, Runnable
         
        int currRow = currBlock.getRow();
        int currCol = currBlock.getCol();
-       
+       if (key == KeyEvent.VK_SPACE) {
+           sleepTime = 10;
+        }
        // check if block can be moved to left
        if (key == KeyEvent.VK_LEFT && currCol != 0 && grid[currRow][currCol-1] == null) {
             grid[currRow][currCol] = null;

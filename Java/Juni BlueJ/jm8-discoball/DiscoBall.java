@@ -25,7 +25,7 @@ public class DiscoBall extends Applet implements Runnable
             repaint();
             
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             }
             catch (Exception e) {}
         }
