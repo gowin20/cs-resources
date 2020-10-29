@@ -1,0 +1,29 @@
+hw1.txt
+
+A brief after-action report:
+
+The first six functions I wrote for this homework are somewhat simple and self-explanatory, 
+at least compared to the filter_reachable function. They perform basic operators on sets using recursion.
+While I'm sure there were more efficient ways to complete these, the ways I found seem sufficient for this assignment.
+
+I spent the vast majority of my time on the "filter_reachable" function. In order to complete this function, I broke it down
+into two major components: 
+    1. creating a list of all the reachable rules
+    2. sorting that list and removing duplicates, to preserve order
+The second step is somewhat trivial, and can be done in just a couple lines using basic recursion like in the first six.
+The interesting logic comes in my recusrive "clean_rules" function. This function has to perform two different sets of recursive calls.
+- At the top level, the function must cycle through the entire list of rules and see if they contain the provided symbol on the LHS. 
+    This determines whether or not a rule is valid.
+- When the function identifies a valid rule, it must then recursively parse it.
+
+Other approaches:
+not much space here, but i considered writing a function which only passes two arguments. This, however, results in lossage of rules.
+Given that the right-hand side of the rules do not necessarily follow in linear order from each other, it is possible that a rule
+at the bottom of the list will link back to the first rule on the list. Because of this, we need to have access to every rule at every step,
+meaning we need a third parameter (at least, that's how I did it)
+
+
+Weaknesses:
+My primary regret with this function is that my solution necessitates a third "master" parameter in the function call. 
+Not only is this inconvenient to code with, it also creates large wastes of memory. This master list is copied on every
+level of recursion, so it ends up using FAR more space than just a simple list. 
