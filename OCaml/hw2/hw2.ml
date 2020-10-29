@@ -230,6 +230,12 @@ let rec filter_some lst =
 
 
 (* keep track of the derivation path used to get here, and return it in the acceptor *)
+(*
+
+Sym, body
+
+*)
+
 
 let terminal_matcher terminal accept frag = 
   match frag with
