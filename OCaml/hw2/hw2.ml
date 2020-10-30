@@ -85,8 +85,8 @@ let rec nonterminal_matcher prod_fun alt_rules accept frag =
                   match works with
                   | None -> nonterminal_matcher prod_fun rest_rules accept frag
                   | Some suf -> works
-(* This function is magical. passing a curried version as "acceptor" to the terminal + nonterminal functions ensures that they always check the rules in the proper order *)
-(*most importantly, this method takes care of backtracking. I initially tried to write match cases which backtrack, but that failed after hours of attempts *)
+(* This function is awesome. Passing a curried version as "acceptor" to the terminal + nonterminal functions ensures that they always check the rules in the proper order *)
+(*most importantly, this method takes care of backtracking. I initially tried to write match cases which backtrack, but that failed after many hours of attempts *)
 and body_matcher prod_fun rule accept frag = 
   match rule with
   | [] -> accept frag
@@ -96,6 +96,7 @@ and body_matcher prod_fun rule accept frag =
                      | N s -> let s_alt_rules = prod_fun s in
                      nonterminal_matcher prod_fun s_alt_rules new_acceptor frag
 
+(* all the main matcher function does is call nontermina_matcher with the starting symbol and entire frag *)
 let make_matcher gram = fun accept -> fun frag ->
   let start_sym = fst gram in
   let prod_fun = snd gram in
@@ -105,13 +106,10 @@ let make_matcher gram = fun accept -> fun frag ->
 
 
 
-
+(* original acceptor that I based my derivational acceptor off of *)
 let accept_empty_suffix = function
    | _::_ -> None
    | x -> Some x
-
-
-
 
 
 (* only accepts the empty suffix, and returns a PATH *)
@@ -120,27 +118,34 @@ let accept_empty_path frag path =
   | [] -> Some path
   | _ -> None
 
+(* derive_body and derive_nonterminal functions create a derivation for a given fragment within a grammar *)
+(* outputs a derivation in reverse order *)
+
+(* This logic is exactly the same as make_matcher, but it tracks a path and returns that instead of a suffix *)
+
+(* derive_body is the "and" function which matches and mashes an entire rule body together *)
 let rec derive_body prod_fun rule accept frag path =
   match rule with
   | [] -> accept frag path
   | sym::rest_rule_syms -> let accept_rest = derive_body prod_fun rest_rule_syms accept in
                            match sym with
-                           | T s ->  ( match frag with (* Originally, used a terminal_path function with the same code here. However, that caused errors so I inlined it here *)
+                           | T s ->  ( match frag with (* Originally, used a terminal_path function with the same code as below. However, that caused errors so I inlined it here *)
                                       | f_sym::f_rest -> if (s = f_sym) then (accept_rest f_rest path) else None
                                       | _ -> None )
                            | N s -> let alt_rules = prod_fun s in
                                     derive_nonterminal s prod_fun alt_rules accept_rest frag path
-
+(* derive_nonterminal is the "or" function which matches a nonterminal against an alternative rule list *)
 and derive_nonterminal s_sym prod_fun alt_rules accept frag path =
   match alt_rules with
   | [] -> None
-  | rule::rest_rules -> let this_path = (s_sym,rule)::path in
+  | rule::rest_rules -> let this_path = (s_sym,rule)::path in (* add current location to the path here *)
                         let complete_path = derive_body prod_fun rule accept frag this_path in
                         match complete_path with
                         | None -> derive_nonterminal s_sym prod_fun rest_rules accept frag path
                         | Some apath -> complete_path
 
 
+(* main construct_deriv function calls helper functions, then reverses the derivation before returning *)
 let construct_deriv gram frag =
   let fst_sym = fst gram in
   let prod_fun = snd gram in
@@ -152,15 +157,7 @@ let construct_deriv gram frag =
   
 
 
-let build_leaf terminal = Leaf (terminal)
-
-
-let deriv_done (deriv : (('nonterminal * ('nonterminal, 'terminal) symbol List.t) list t)) =
-  match deriv with
-  | Some [] -> []
-(* returns a packet containing (num of rules used),(body of rule) *)
-
-
+(* helper function used to build a parse tree*)
 let rec exclude_n lst n =
   match lst with
   | [] -> []
@@ -170,43 +167,52 @@ let rec exclude_n lst n =
 
 (* build_node_body and make_tree helper functions *)
 (* creates a tree given a fragment derivation *)
+(* 
+BOTH of these functions return packeted information:
 
-(* this function returns the BODY of a node: a list containing subtrees *)
+a tuple containing the number of rules of the derivation used up to this point as LHS,
+and the tree itself as RHS
+
+the numRules is used internally to construct the tree, and is necessary to return as well. See build_node_body for its logical use
+
+*)
+
+(* this function returns the BODY of a node: a list containing subtrees. Once again, the equivalent of an "and" matcher function on a derivation list *)
 let rec build_node_body (body : (('nonterminal, 'terminal) symbol List.t)) (deriv : (('nonterminal * ('nonterminal, 'terminal) symbol List.t) list)) (numRules) = 
   match body with
   | [] -> (numRules,[])
   | b_sym::b_rest -> match b_sym with
                      | N s -> let tree_packet = make_tree (deriv) (numRules) in
                               let new_numRules = fst tree_packet in
-                              let rules_used = (new_numRules) - (numRules) in
+                              let rules_used = (new_numRules) - (numRules) in (* get to the right spot in the derivation after making the nonterminal tree *)
                               let tree = snd tree_packet in
-                              let remaining_deriv = exclude_n deriv rules_used in
-                              let rest_body_packet = build_node_body (b_rest) (remaining_deriv) (new_numRules) in
+                              let remaining_deriv = exclude_n deriv rules_used in (* use helper function to exclude the first n items from the deriv *)
+                              let rest_body_packet = build_node_body (b_rest) (remaining_deriv) (new_numRules) in (* make the rest of the body here *)
                               let total_rules = fst rest_body_packet in
                               let rest_body = snd rest_body_packet in
-                              (total_rules,(tree::rest_body))
+                              (total_rules,(tree::rest_body)) (* package the return *)
                      | T s -> let this_leaf = (Leaf s) in
-                              let rest_body_packet = build_node_body (b_rest) (deriv) (numRules) in
+                              let rest_body_packet = build_node_body (b_rest) (deriv) (numRules) in (* make the rest of the body here. leaf node means we don't need to advance numRules *)
                               let total_rules = fst rest_body_packet in
                               let rest_body = snd rest_body_packet in
-                              (total_rules,(this_leaf::rest_body))
+                              (total_rules,(this_leaf::rest_body)) (* package the tree with the numbah *)
 
-(* constructs a tree, given a DFS Derivation and a variable initialized to 0*)
+(* constructs a tree, given a DFS Derivation and a variable initialized to 0. this packages and returns a nonterminal node with a body, necessary for the final tree output *)
 and make_tree (deriv : (('nonterminal * ('nonterminal, 'terminal) symbol List.t) list)) (numRules) =
   match deriv with
   | (d_rule::d_rest) -> let (sym,rhs) = d_rule in
-                           let node_body_packet = build_node_body (rhs) (d_rest) (numRules+1) in
+                           let node_body_packet = build_node_body (rhs) (d_rest) (numRules+1) in (* every time we iterate through the derivation, increase numRules by 1 *)
                            let num_rules = fst node_body_packet in
                            let node_body = snd node_body_packet in
-                           (num_rules,(Node (sym,node_body)))
+                           (num_rules,(Node (sym,node_body))) (* package the return *)
 
-let pass_deriv_to_tree deriv =
-  match deriv with
-  | None -> None
-  | Some d -> Some (make_tree d 0)
+(* main make_perser function *)
 
-
-
+(* 
+first make a derivation
+if the derivation is valid, pass it to the make_tree helper function
+then, package and return the tree from the tree packet
+*)
 let rec make_parser gram = fun frag ->
     let frag_deriv = construct_deriv gram frag in
     match frag_deriv with
