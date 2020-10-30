@@ -1,0 +1,31 @@
+
+hw2.txt:
+
+Function Design:
+    I ended up taking heavy inspiration from my "make_matcher" function in order to implement "make_parser".
+    Logically, about half of the code
+    is almost identical to "make_matcher," and the other half is also inspired by the same concept. The idea of using two mutually recursive
+    functions in order to execute the main body of the code is powerful. It wasn't possible to exactly duplicate my "make_matcher" function for
+    "make_parser," because the data types I was returning simply did not provide me enough information to write good functions. the "acceptor"
+    is by far the most powerful idea of "make_matcher" - we create new "acceptors" as we go in order to verify the fragment, and backtrack if it doesn't work.
+    acceptors do not work with parse trees in any way that I've found.
+    In order to work without an acceptor, I decided to build my tree out of a derivation instead. I wrote a construct_derivation function almost identical
+    to make_matcher, which tracks the order of rules used and returns a logical derivation from the start symbol in a grammar.
+    Next, I wrote two more mutually recursive functions in order to construct a tree out of this derivation. This code was the most unique of the batch,
+    and I ended up using an idea I had previously tried to use for my make_matcher function. In order to make sure we were always at the right point in the derivation,
+    I returned a packet containing the tree, along with the number of rules used in the derivation so far. This allowed me to do math in order to make sure the derivation was transcribed properly.
+    There's probably a simpler way to do this with less arguments, but I'm proud of this solution because I thought of it organically.
+
+
+The main weakness of my matcher and parser is what I call "left-handed" grammar rules. 
+
+These rules are formatted as such:
+    a -> [a;b]
+
+Notice that this differs from similar valid rules that the matcher and parser work on:
+    a -> [b;a]
+
+Having the LHS symbol as the first symbol on the RHS is a recipe for trouble. This causes the matcher and parser to enter a state
+of infinite recursion, never to be seen again. This could be temporarily fixed by adding a depth variable for some arbitrary depth "k", but I wanted
+my program to be robust and not rely on arbitrary variables. The real fix for this problem would be to build a grammar which matches symbols in an entirely different method.
+In my LING 185 class, we learned about a method called "Left-Corner Parsing" which deals with this problem efficiently.

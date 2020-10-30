@@ -1,9 +1,5 @@
-hw2.ml
 open List
 
-
-
-open String
 (* Homework 2. More grammar stuff *)
 
 type ('nonterminal, 'terminal) parse_tree =
@@ -30,6 +26,8 @@ let rec make_prodfun rules = fun sym ->
                               if sym = this_sym then (snd sym_rule)::rest_sym_rules
                               else rest_sym_rules;;
 
+
+(* main convert_grammar function is here. Pretty much just creates a production function and returns it as a tuple *)
 let convert_grammar gram1 =
   let start = fst gram1 in
   let hw1Rules = snd gram1 in
@@ -41,9 +39,11 @@ let convert_grammar gram1 =
 
 (* 2. Parse Tree *)
 
+
+(* trivial when using concat and map *)
 let rec parse_tree_leaves = function
   | Leaf l -> [l]
-  | Node (sym, list) -> List.concat (List.map (parse_tree_leaves) (list));;
+  | Node (sym, lst) -> List.concat (List.map (parse_tree_leaves) (lst));;
   
 
 
@@ -105,13 +105,6 @@ let make_matcher gram = fun accept -> fun frag ->
 
 
 
-
-(* original acceptor that I based my derivational acceptor off of *)
-let accept_empty_suffix = function
-   | _::_ -> None
-   | x -> Some x
-
-
 (* only accepts the empty suffix, and returns a PATH *)
 let accept_empty_path frag path =
   match frag with
@@ -145,8 +138,8 @@ and derive_nonterminal s_sym prod_fun alt_rules accept frag path =
                         | Some apath -> complete_path
 
 
-(* main construct_deriv function calls helper functions, then reverses the derivation before returning *)
-let construct_deriv gram frag =
+(* main construct_derivation function calls helper functions, then reverses the derivation before returning *)
+let construct_derivation gram frag =
   let fst_sym = fst gram in
   let prod_fun = snd gram in
   let alt_rules = prod_fun fst_sym in
@@ -214,7 +207,7 @@ if the derivation is valid, pass it to the make_tree helper function
 then, package and return the tree from the tree packet
 *)
 let rec make_parser gram = fun frag ->
-    let frag_deriv = construct_deriv gram frag in
+    let frag_deriv = construct_derivation gram frag in
     match frag_deriv with
     | None -> None
     | Some derivation -> let tree_packet = make_tree derivation 0 in
