@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Null ",
+            "request": "launch",
+            "mainClass": "${file}",
+            "args": ["Null","8","100000000","5"]
+        },
+        {
+            "type": "java",
+            "name": "Synchronized",
+            "request": "launch",
+            "mainClass": "${file}",
+            "args": ["Synchronized","8","100000000","5"]
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<cs-resources_33531f64>",
+            "request": "launch",
+            "mainClass": "Main",
+            "projectName": "cs-resources_33531f64"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Ubtest<cs-resources_33531f64>",
+            "request": "launch",
+            "mainClass": "Ubtest",
+            "projectName": "cs-resources_33531f64"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-UnsafeMemory<cs-resources_33531f64>",
+            "request": "launch",
+            "mainClass": "UnsafeMemory",
+            "projectName": "cs-resources_33531f64"
+        }
+    ]
+}
